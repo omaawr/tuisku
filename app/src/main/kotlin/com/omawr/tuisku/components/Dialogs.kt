@@ -20,6 +20,7 @@ fun NewFileDialog(
 ) {
     val textFieldState = rememberTextFieldState()
     val ctx = LocalContext.current
+    val error = remember { mutableStateOf(false) }
 
     AlertDialog(
         title = {
@@ -27,7 +28,8 @@ fun NewFileDialog(
         },
         text = {
             OutlinedTextField(
-                state = textFieldState
+                state = textFieldState,
+                isError = error.value
             )
         },
         onDismissRequest = {
@@ -36,8 +38,15 @@ fun NewFileDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    File(ctx.filesDir, "${textFieldState.text}.txt").writeText("")
-                    onDismissRequest()
+                    when {
+                        !textFieldState.text.contains("/") -> {
+                            File(ctx.filesDir, "${textFieldState.text}.txt").writeText("")
+                            onDismissRequest()
+                        }
+                        else -> {
+                            error.value = true
+                        }
+                    }
                 }
             ) {
                 Text(stringResource(R.string.confirm))

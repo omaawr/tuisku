@@ -43,25 +43,29 @@ fun TextEditor(
     val context = LocalContext.current
     val activity = LocalActivity.current!!
     val viewModel: TextEditorViewModel = koinViewModel()
+
     val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = null)
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = null)
+
     val textFieldValue = remember { mutableStateOf("") }
     val isLoading = remember { mutableStateOf(false) }
 
     LaunchedEffect(encryptionKey.value, ivKey.value) {
-        if (encryptionKey.value !== null && ivKey.value != null) {
-            val decryptedData = handleEncryptedData(
-                null,
-                file,
-                true,
-                encryptionKey.value!!.toByteArray(),
-                ivKey.value!!.toByteArray()
-            )
+        when {
+            encryptionKey.value != null && ivKey.value != null -> {
+                val decryptedData = handleEncryptedData(
+                    file = file,
+                    decrypt = true,
+                    key = encryptionKey.value!!.toByteArray(),
+                    iv = ivKey.value!!.toByteArray()
+                )
 
-            textFieldValue.value = decryptedData!!
-            isLoading.value = false
-        } else {
-            isLoading.value = true
+                textFieldValue.value = decryptedData!!
+                isLoading.value = false
+            }
+            else -> {
+                isLoading.value = true
+            }
         }
     }
 

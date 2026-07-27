@@ -64,56 +64,62 @@ fun Content(
 ) {
     val context = LocalContext.current
     val viewModel: SettingsViewModel = koinViewModel()
+    val buttonText = remember { mutableStateOf("Show") }
+
     val showEncryptionKeys = remember { mutableStateOf(false) }
     val showChangePasswordDialog = remember { mutableStateOf(false) }
     val showRemovePasswordDialog = remember { mutableStateOf(false) }
     val showConfirmPassswordDialog = remember { mutableStateOf(false) }
+
     val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = "")
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
     val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
     val disableScreenshots = viewModel.disableScreenshots.collectAsStateWithLifecycle(initialValue = false)
     val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
-    val buttonText = remember { mutableStateOf("Show") }
 
-    if (showChangePasswordDialog.value) {
-        ChangePasswordDialog(
-            onDismissRequest = {
-                showChangePasswordDialog.value = false
-            },
-            onSuccess = { password ->
-                viewModel.writePassword(password)
-                showChangePasswordDialog.value = false
-                Toast.makeText(context, R.string.password_set_successfully, Toast.LENGTH_SHORT).show()
-            },
-            password = password.value
-        )
-    }
+    when {
+        showChangePasswordDialog.value -> {
+            ChangePasswordDialog(
+                onDismissRequest = {
+                    showChangePasswordDialog.value = false
+                },
+                onSuccess = { password ->
+                    viewModel.writePassword(password)
+                    showChangePasswordDialog.value = false
+                    Toast.makeText(context, R.string.password_set_successfully, Toast.LENGTH_SHORT)
+                        .show()
+                },
+                password = password.value
+            )
+        }
 
-    if (showRemovePasswordDialog.value) {
-        PasswordDialog(
-            onDismissRequest = {
-                showRemovePasswordDialog.value = false
-            },
-            onSuccess = {
-                viewModel.writePassword("")
-                showRemovePasswordDialog.value = false
-                Toast.makeText(context, R.string.password_set_successfully, Toast.LENGTH_SHORT).show()
-            },
-            password = password.value
-        )
-    }
+        showRemovePasswordDialog.value -> {
+            PasswordDialog(
+                onDismissRequest = {
+                    showRemovePasswordDialog.value = false
+                },
+                onSuccess = {
+                    viewModel.writePassword("")
+                    showRemovePasswordDialog.value = false
+                    Toast.makeText(context, R.string.password_set_successfully, Toast.LENGTH_SHORT).show()
+                },
+                password = password.value
+            )
+        }
 
-    if (showConfirmPassswordDialog.value) {
-        PasswordDialog(
-            onDismissRequest = {
-                showConfirmPassswordDialog.value = false
-            },
-            onSuccess = {
-                showEncryptionKeys.value = true
-                showRemovePasswordDialog.value = true
-            },
-            password = password.value
-        )
+        showConfirmPassswordDialog.value -> {
+            PasswordDialog(
+                onDismissRequest = {
+                    showConfirmPassswordDialog.value = false
+                },
+                onSuccess = {
+                    showEncryptionKeys.value = true
+                    showConfirmPassswordDialog.value = false
+                    buttonText.value = "Hide"
+                },
+                password = password.value
+            )
+        }
     }
 
     LazyColumn(
@@ -157,14 +163,17 @@ fun Content(
                         onClick = {
                             when (showEncryptionKeys.value) {
                                 true -> {
-                                    if (password.value.isNotBlank()) showConfirmPassswordDialog.value =
-                                        true else showEncryptionKeys.value = false
+                                    showEncryptionKeys.value = false
                                     buttonText.value = "Show"
                                 }
 
                                 false -> {
-                                    showEncryptionKeys.value = true
-                                    buttonText.value = "Hide"
+                                    if (password.value.isNotBlank()) {
+                                        showConfirmPassswordDialog.value = true
+                                    } else {
+                                        showEncryptionKeys.value = true
+                                        buttonText.value = "Hide"
+                                    }
                                 }
                             }
                         }

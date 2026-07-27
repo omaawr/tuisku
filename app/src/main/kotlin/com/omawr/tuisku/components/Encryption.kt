@@ -6,7 +6,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 fun handleEncryptedData(
-    data: String?,
+    data: String? = "",
     file: File,
     decrypt: Boolean,
     key: ByteArray,

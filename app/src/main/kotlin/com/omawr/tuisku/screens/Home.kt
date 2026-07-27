@@ -52,18 +52,17 @@ fun Home(
     var showPasswordDialog by remember { mutableStateOf(false) }
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showPasswordDeletionDialog by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var selectedFile: File? by remember { mutableStateOf(null) }
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
-    var passwordDialogOnClick = {
-        navigateToTextEditor = true
-    }
 
     viewModel.checkKeys()
 
     when {
         navigateToTextEditor -> onTextEditor(selectedFile!!)
+
         showDeleteDialog -> {
             DeleteFileDialog(
                 onDismissRequest = {
@@ -88,7 +87,20 @@ fun Home(
                     showPasswordDialog = false
                 },
                 onSuccess = {
-                    passwordDialogOnClick()
+                    navigateToTextEditor = true
+                },
+                password = password.value
+            )
+        }
+
+        showPasswordDeletionDialog -> {
+            PasswordDialog(
+                onDismissRequest = {
+                    showPasswordDeletionDialog = false
+                },
+                onSuccess = {
+                    showDeleteDialog = true
+                    showPasswordDeletionDialog = false
                 },
                 password = password.value
             )
@@ -153,16 +165,16 @@ fun Home(
                             Note(
                                 onClick = {
                                     selectedFile = file
-                                    if (password.value.isNotBlank()) showPasswordDialog =
-                                        true else navigateToTextEditor = true
+                                    if (password.value.isNotBlank()) {
+                                        showPasswordDialog = true
+                                    } else {
+                                        navigateToTextEditor = true
+                                    }
                                 },
                                 onLongClick = {
                                     selectedFile = file
                                     if (password.value.isNotBlank()) {
-                                        passwordDialogOnClick = {
-                                            showDeleteDialog = true
-                                        }
-                                        showPasswordDialog = true
+                                        showPasswordDeletionDialog = true
                                     } else {
                                         showDeleteDialog = true
                                     }
