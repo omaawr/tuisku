@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
         settings.getDisableScreenshots()
             .launchInLifecycle(lifecycle) {
                 when (it) {
