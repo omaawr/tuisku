@@ -158,7 +158,7 @@ fun ChangePasswordDialog(
     password: String,
 ) {
     val previousPasswordTextFieldState = rememberTextFieldState()
-    val textFieldState = rememberTextFieldState()
+    val newPasswordState = rememberTextFieldState()
     val confirmTextFieldState = rememberTextFieldState()
 
     val error = remember { mutableStateOf(false) }
@@ -172,7 +172,7 @@ fun ChangePasswordDialog(
             Column {
                 if (password.isNotBlank()) {
                     OutlinedTextField(
-                        state = textFieldState,
+                        state = previousPasswordTextFieldState,
                         label = {
                             Text(stringResource(R.string.previous_password))
                         },
@@ -181,7 +181,7 @@ fun ChangePasswordDialog(
                 }
 
                 OutlinedTextField(
-                    state = textFieldState,
+                    state = newPasswordState,
                     label = {
                         Text(stringResource(R.string.new_password))
                     },
@@ -207,8 +207,8 @@ fun ChangePasswordDialog(
                         previousPasswordTextFieldState.text.toString() != password -> previousPasswordError.value =
                             true
 
-                        confirmTextFieldState.text.toString() == textFieldState.text.toString() -> onSuccess(
-                            textFieldState.text.toString()
+                        confirmTextFieldState.text.toString() == newPasswordState.text.toString() -> onSuccess(
+                            newPasswordState.text.toString()
                         )
 
                         else -> error.value = true

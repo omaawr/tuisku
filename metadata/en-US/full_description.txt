@@ -1,0 +1,3 @@
+Tuisku is a simple and lightweight notes app that encrypts your notes with the ChaCha20 algorithm stored internally, you can share these notes unencrypted (if you wanted to) using the share button ontop of the note editor.
+
+You can also disable screenshoting in Settings and view your encryption key there.
