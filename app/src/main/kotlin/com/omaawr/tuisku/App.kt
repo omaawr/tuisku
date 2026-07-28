@@ -30,7 +30,7 @@ fun App() {
         entry<Screen.Home> {
             Home(
                 modifier = Modifier.fillMaxSize(),
-                onTextEditor = { file -> navigator.navigate(Screen.TextEditor(file)) },
+                onTextEditor = { file, path -> navigator.navigate(Screen.TextEditor(file, path)) },
                 onSettings = { navigator.navigate(Screen.Settings) }
             )
         }
@@ -44,7 +44,8 @@ fun App() {
         entry<Screen.TextEditor> { key ->
             TextEditor(
                 modifier = Modifier.fillMaxSize(),
-                file = key.file,
+                bytes = key.fileContents,
+                path = key.filePath,
                 onBack = { navigator.goBack() }
             )
         }

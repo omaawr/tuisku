@@ -1,6 +1,8 @@
 package com.omaawr.tuisku.screens
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -31,13 +34,13 @@ import com.omaawr.tuisku.components.handleEncryptedData
 import com.omaawr.tuisku.components.shareFile
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.androidx.compose.koinViewModel
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextEditor(
     modifier: Modifier = Modifier,
-    file: File,
+    bytes: ByteArray,
+    path: String,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -54,10 +57,11 @@ fun TextEditor(
         when {
             encryptionKey.value != null && ivKey.value != null -> {
                 val decryptedData = handleEncryptedData(
-                    file = file,
+                    bytes = bytes,
                     decrypt = true,
                     key = encryptionKey.value!!.toByteArray(),
-                    iv = ivKey.value!!.toByteArray()
+                    iv = ivKey.value!!.toByteArray(),
+                    filePath = path
                 )
 
                 textFieldValue.value = decryptedData!!
@@ -86,11 +90,12 @@ fun TextEditor(
                     if (!isLoading.value) {
                         IconButton(onClick = {
                             handleEncryptedData(
-                                textFieldValue.value,
-                                file,
-                                false,
-                                encryptionKey.value!!.toByteArray(),
-                                ivKey.value!!.toByteArray()
+                                data = textFieldValue.value,
+                                bytes = bytes,
+                                decrypt = false,
+                                key = encryptionKey.value!!.toByteArray(),
+                                iv = ivKey.value!!.toByteArray(),
+                                filePath = path
                             )
                         }) {
                             Icon(
@@ -129,13 +134,19 @@ fun Content(
     innerPadding: PaddingValues
 ) {
     LazyColumn(
-        Modifier
-            .padding(innerPadding)
+        modifier = Modifier
+            .padding(innerPadding).fillMaxSize()
     ) {
         when (isLoading.value) {
             true -> {
                 item {
-                    ContainedLoadingIndicator()
+                    Column(
+                        modifier = Modifier.fillParentMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        ContainedLoadingIndicator()
+                    }
                 }
             }
 

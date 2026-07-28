@@ -7,7 +7,8 @@ import javax.crypto.spec.SecretKeySpec
 
 fun handleEncryptedData(
     data: String? = "",
-    file: File,
+    bytes: ByteArray,
+    filePath: String,
     decrypt: Boolean,
     key: ByteArray,
     iv: ByteArray
@@ -17,12 +18,12 @@ fun handleEncryptedData(
     cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
 
     val bytes =
-        if (!decrypt) cipher.doFinal(data!!.toByteArray()) else cipher.doFinal(file.readBytes())
+        if (!decrypt) cipher.doFinal(data!!.toByteArray()) else cipher.doFinal(bytes)
 
     if (decrypt) {
         return String(bytes)
     } else {
-        file.writeBytes(bytes)
+        File(filePath).writeBytes(bytes)
         return null
     }
 }
