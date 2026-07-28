@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.omawr.tuisku"
+    namespace = "com.omaawr.tuisku"
     compileSdk {
         version = release(37) {
             minorApiLevel = 1
@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.omawr.tuisku"
+        applicationId = "com.omaawr.tuisku"
         minSdk = 28
         targetSdk = 37
         versionCode = 1

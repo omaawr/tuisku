@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">Tuisku</string>
+    <string name="introduction_header">Welcome to Tuisku!</string>
+    <string name="introduction_text">Tuisku is a simple and lightweight notes app that encrypts your notes with the ChaCha20 algorithm, Notes are stored internally and can be shared using the share button ontop of the note editor, You can also view your encryption key in Settings and optionally set a password for every note to make it a bit more secure.</string>
 
     <string name="new_note">New note</string>
     <string name="save_note">Save note</string>
+    <string name="share_note">Share note</string>
     <string name="delete_note">Delete note?</string>
     <string name="delete_note_desc">This note will get deleted</string>
     <string name="no_notes_found">No notes found</string>
@@ -27,4 +30,5 @@
     <string name="set_password">Set password</string>
     <string name="new_password">New password</string>
     <string name="password_set_successfully">Password set successfully</string>
+    <string name="password_removed_successfully">Password removed successfully</string>
 </resources>
