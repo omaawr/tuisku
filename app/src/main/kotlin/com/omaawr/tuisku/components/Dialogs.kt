@@ -232,22 +232,16 @@ fun ChangePasswordDialog(
 
 @Composable
 fun FirstLaunchDialog(
-    onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
 ) {
     AlertDialog(
-        icon = {
-            Icon(painterResource(R.mipmap.ic_launcher), "")
-        },
         title = {
             Text(text = stringResource(R.string.introduction_header))
         },
         text = {
             Text(text = stringResource(R.string.introduction_text))
         },
-        onDismissRequest = {
-            onDismissRequest()
-        },
+        onDismissRequest = {},
         confirmButton = {
             TextButton(
                 onClick = {

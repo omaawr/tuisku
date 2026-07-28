@@ -49,10 +49,7 @@ fun Home(
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val locale = LocalLocale.current.platformLocale
     val context = LocalContext.current
-    val notesDir = File(context.filesDir.absolutePath + File.separator + "notes")
-    if (!notesDir.exists()) notesDir.mkdir()
-
-    val files = notesDir.listFiles()!!
+     val files = context.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
 
     var showNewFileDialog by remember { mutableStateOf(false) }
     var showPasswordDialog by remember { mutableStateOf(false) }
@@ -65,6 +62,8 @@ fun Home(
     var selectedFile: File? by remember { mutableStateOf(null) }
 
     viewModel.checkKeys()
+
+    showFirstLaunchDialog = firstLaunch.value
 
     when {
         navigateToTextEditor -> onTextEditor(selectedFile!!)
@@ -115,17 +114,13 @@ fun Home(
 
         showFirstLaunchDialog -> {
             FirstLaunchDialog(
-                onDismissRequest = {
-                    showFirstLaunchDialog = false
-                },
                 onConfirmation = {
                     viewModel.writeFirstLaunch(false)
+                    showFirstLaunchDialog = false
                 }
             )
         }
     }
-
-    if (firstLaunch.value) showFirstLaunchDialog = true
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
