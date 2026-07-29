@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -17,6 +20,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +36,7 @@ import com.omaawr.tuisku.components.ShareFile
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TextEditor(
     modifier: Modifier = Modifier,
@@ -43,23 +47,21 @@ fun TextEditor(
     val viewModel: TextEditorViewModel = koinViewModel()
     val context = LocalContext.current
 
-    val textFieldValue = remember { mutableStateOf("") }
+    val textFieldState = rememberTextFieldState()
     val isLoading = remember { mutableStateOf(false) }
     val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
     val shareFile = remember { mutableStateOf(false) }
 
-    when {
-        decryptedData.value !== null -> {
-            textFieldValue.value = decryptedData.value!!
-            isLoading.value = false
+    if (decryptedData.value !== null) {
+        LaunchedEffect(Unit) {
+            textFieldState.setTextAndPlaceCursorAtEnd(decryptedData.value!!)
         }
-
-        else -> {
-            isLoading.value = true
-        }
+        isLoading.value = false
+    } else {
+        isLoading.value = true
     }
 
-    if (shareFile.value) ShareFile(textFieldValue.value, context)
+    if (shareFile.value) ShareFile(textFieldState.text.toString(), context)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -77,7 +79,7 @@ fun TextEditor(
                 actions = {
                     if (!isLoading.value) {
                         IconButton(onClick = {
-                            viewModel.encrypt(textFieldValue.value, path)
+                            viewModel.encrypt(textFieldState.text.toString(), path)
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_save),
@@ -100,7 +102,7 @@ fun TextEditor(
         }
     ) { innerPadding ->
         Content(
-            textFieldValue,
+            textFieldState,
             isLoading,
             innerPadding
         )
@@ -110,7 +112,7 @@ fun TextEditor(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Content(
-    textFieldValue: MutableState<String>,
+    state: TextFieldState,
     isLoading: MutableState<Boolean>,
     innerPadding: PaddingValues
 ) {
@@ -139,8 +141,7 @@ fun Content(
                         placeholder = {
                             Text(stringResource(R.string.type_here))
                         },
-                        value = textFieldValue.value,
-                        onValueChange = { textFieldValue.value = it },
+                        state = state,
                         colors = TextFieldDefaults.colors(
                             // i should probably do something about this
                             focusedContainerColor = Color.Transparent,

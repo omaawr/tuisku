@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.FileProvider
 import java.io.File
 
@@ -34,7 +34,7 @@ fun ShareFile(
         if (result.resultCode == Activity.RESULT_OK || result.resultCode == Activity.RESULT_CANCELED) file.delete()
     }
 
-    SideEffect {
+    LaunchedEffect(Unit) {
         intent.launch(Intent.createChooser(shareIntent, "note"))
     }
 }
