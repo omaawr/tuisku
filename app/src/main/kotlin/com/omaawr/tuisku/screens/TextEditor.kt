@@ -1,6 +1,5 @@
 package com.omaawr.tuisku.screens
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,7 +17,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,8 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
-import com.omaawr.tuisku.components.handleEncryptedData
-import com.omaawr.tuisku.components.shareFile
+import com.omaawr.tuisku.components.ShareFile
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -43,35 +40,26 @@ fun TextEditor(
     path: String,
     onBack: () -> Unit
 ) {
-    val context = LocalContext.current
-    val activity = LocalActivity.current!!
     val viewModel: TextEditorViewModel = koinViewModel()
-
-    val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = null)
-    val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = null)
+    val context = LocalContext.current
 
     val textFieldValue = remember { mutableStateOf("") }
     val isLoading = remember { mutableStateOf(false) }
+    val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
+    val shareFile = remember { mutableStateOf(false) }
 
-    LaunchedEffect(encryptionKey.value, ivKey.value) {
-        when {
-            encryptionKey.value != null && ivKey.value != null -> {
-                val decryptedData = handleEncryptedData(
-                    bytes = bytes,
-                    decrypt = true,
-                    key = encryptionKey.value!!.toByteArray(),
-                    iv = ivKey.value!!.toByteArray(),
-                    filePath = path
-                )
+    when {
+        decryptedData.value !== null -> {
+            textFieldValue.value = decryptedData.value!!
+            isLoading.value = false
+        }
 
-                textFieldValue.value = decryptedData!!
-                isLoading.value = false
-            }
-            else -> {
-                isLoading.value = true
-            }
+        else -> {
+            isLoading.value = true
         }
     }
+
+    if (shareFile.value) ShareFile(textFieldValue.value, context)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -89,14 +77,7 @@ fun TextEditor(
                 actions = {
                     if (!isLoading.value) {
                         IconButton(onClick = {
-                            handleEncryptedData(
-                                data = textFieldValue.value,
-                                bytes = bytes,
-                                decrypt = false,
-                                key = encryptionKey.value!!.toByteArray(),
-                                iv = ivKey.value!!.toByteArray(),
-                                filePath = path
-                            )
+                            viewModel.encrypt(textFieldValue.value, path)
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_save),
@@ -105,7 +86,7 @@ fun TextEditor(
                         }
 
                         IconButton(onClick = {
-                            shareFile(textFieldValue.value, context, activity)
+                            shareFile.value = true
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_share),
@@ -135,7 +116,8 @@ fun Content(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(innerPadding).fillMaxSize()
+            .padding(innerPadding)
+            .fillMaxSize()
     ) {
         when (isLoading.value) {
             true -> {

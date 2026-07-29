@@ -1,5 +1,6 @@
 package com.omaawr.tuisku.di
 
+import com.omaawr.tuisku.components.EncryptionManager
 import com.omaawr.tuisku.settings.Preferences
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import com.omaawr.tuisku.viewmodels.SettingsViewModel
@@ -14,6 +15,12 @@ val appModule = module {
         Preferences(
             androidContext(),
             androidApplication()
+        )
+    }
+
+    single<EncryptionManager> {
+        EncryptionManager(
+            get()
         )
     }
 }

@@ -23,7 +23,7 @@ class Preferences(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    val keysetHandle: KeysetHandle =
+    private val keysetHandle: KeysetHandle =
         AndroidKeysetManager.Builder()
             .withSharedPref(application.applicationContext, "keyset", "keyset_prefs")
             .withKeyTemplate(KeyTemplate.createFrom(PredefinedAeadParameters.CHACHA20_POLY1305))
@@ -31,7 +31,7 @@ class Preferences(
             .build()
             .keysetHandle
 
-    val serializer = AeadSerializer(
+    private val serializer = AeadSerializer(
         aead =
             keysetHandle.getPrimitive(
                 RegistryConfiguration.get(),
@@ -40,7 +40,7 @@ class Preferences(
         wrappedSerializer = SettingsSerializer
     )
 
-    val Context.dataStore: DataStore<Settings> by dataStore(
+    private val Context.dataStore: DataStore<Settings> by dataStore(
         fileName = "settings.json",
         serializer = serializer,
         scope = scope

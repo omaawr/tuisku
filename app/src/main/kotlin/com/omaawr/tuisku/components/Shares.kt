@@ -3,13 +3,17 @@ package com.omaawr.tuisku.components
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.core.content.FileProvider
 import java.io.File
 
-fun shareFile(
+@Composable
+fun ShareFile(
     text: String,
-    context: Context,
-    activity: Activity
+    context: Context
 ) {
     val file = File(context.cacheDir, "note.txt")
     file.writeText(text)
@@ -26,7 +30,11 @@ fun shareFile(
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 
-    activity.startActivity(Intent.createChooser(shareIntent, "note"))
+    val intent = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK || result.resultCode == Activity.RESULT_CANCELED) file.delete()
+    }
 
-    file.deleteOnExit()
+    SideEffect {
+        intent.launch(Intent.createChooser(shareIntent, "note"))
+    }
 }
