@@ -13,4 +13,7 @@ A very shrimple and lightweight app used for storing encrypted notes
 - Android 9.0 and higher
 
 ### Installation
-<a href="https://github.com/omaawr/tuisku/releases"><img height="60" alt="image" src="https://github.com/user-attachments/assets/2819f2a0-86b9-4545-9306-8011ad563e04" /></a>
+<a href="https://github.com/omaawr/tuisku/releases">Download the APK at the Releases page</a>
+
+### Credits
+- https://github.com/X1nto/Mauth, for a tiny piece of code that I couldn't figure out at that time
