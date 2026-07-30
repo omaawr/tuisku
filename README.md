@@ -13,7 +13,7 @@ A very shrimple and lightweight app used for storing encrypted notes
 - Android 9.0 and higher
 
 ### Installation
-<a href="https://github.com/omaawr/tuisku/releases">Download the APK at the Releases page</a>
+<a href="https://github.com/omaawr/tuisku/releases">Download the APK at the Releases page</a>, or get it on <a href="https://apt.izzysoft.de/fdroid/index/apk/com.omaawr.tuisku">IzzyOnDroid</a>
 
 ### Credits
 - https://github.com/X1nto/Mauth, for a tiny piece of code that I couldn't figure out at that time
