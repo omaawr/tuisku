@@ -1,0 +1,3 @@
+Changelogs:
+- Fix text field state bugs in 1.0.4
+- Use a better and secure method of generating keys for encrypting notes, if you're below 1.0.5-1 your key will not be changed as generating a new key will make notes unreadable since its tied to the previous key. However, you can copy the contents/backup the notes and clear the app data to regenerate the key, making new notes tied to the new more secure key.
