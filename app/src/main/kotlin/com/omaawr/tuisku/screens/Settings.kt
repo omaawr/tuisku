@@ -11,13 +11,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,6 +38,8 @@ import org.koin.androidx.compose.koinViewModel
 fun Settings(
     onBack: () -> Unit
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
         topBar = {
             LargeTopAppBar(
@@ -47,6 +52,10 @@ fun Settings(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.background
+                ),
+                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
@@ -54,6 +63,7 @@ fun Settings(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
         )
     }
 }
@@ -62,15 +72,11 @@ fun Settings(
 fun Content(
     modifier: Modifier
 ) {
-    val context = LocalContext.current
     val viewModel: SettingsViewModel = koinViewModel()
+    val context = LocalContext.current
     val buttonText = remember { mutableStateOf("Show") }
-
-    val showEncryptionKeys = remember { mutableStateOf(false) }
-    val showChangePasswordDialog = remember { mutableStateOf(false) }
-    val showRemovePasswordDialog = remember { mutableStateOf(false) }
-    val showConfirmPassswordDialog = remember { mutableStateOf(false) }
-
+    val uiState = viewModel.uiState
+    
     val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = "")
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
     val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
@@ -78,14 +84,14 @@ fun Content(
     val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
 
     when {
-        showChangePasswordDialog.value -> {
+        uiState.showChangePasswordDialog -> {
             ChangePasswordDialog(
                 onDismissRequest = {
-                    showChangePasswordDialog.value = false
+                    uiState.showChangePasswordDialog = false
                 },
                 onSuccess = { password ->
                     viewModel.writePassword(password)
-                    showChangePasswordDialog.value = false
+                    uiState.showChangePasswordDialog = false
                     Toast.makeText(context, R.string.password_set_successfully, Toast.LENGTH_SHORT)
                         .show()
                 },
@@ -93,14 +99,14 @@ fun Content(
             )
         }
 
-        showRemovePasswordDialog.value -> {
+        uiState.showRemovePasswordDialog -> {
             PasswordDialog(
                 onDismissRequest = {
-                    showRemovePasswordDialog.value = false
+                    uiState.showRemovePasswordDialog = false
                 },
                 onSuccess = {
                     viewModel.writePassword("")
-                    showRemovePasswordDialog.value = false
+                    uiState.showRemovePasswordDialog = false
                     Toast.makeText(context, R.string.password_removed_successfully, Toast.LENGTH_SHORT)
                         .show()
                 },
@@ -108,14 +114,14 @@ fun Content(
             )
         }
 
-        showConfirmPassswordDialog.value -> {
+        uiState.showConfirmPassswordDialog -> {
             PasswordDialog(
                 onDismissRequest = {
-                    showConfirmPassswordDialog.value = false
+                    uiState.showConfirmPassswordDialog = false
                 },
                 onSuccess = {
-                    showEncryptionKeys.value = true
-                    showConfirmPassswordDialog.value = false
+                    uiState.showEncryptionKeys = true
+                    uiState.showConfirmPassswordDialog = false
                     buttonText.value = "Hide"
                 },
                 password = password.value
@@ -162,17 +168,17 @@ fun Content(
                 trailing = {
                     Button(
                         onClick = {
-                            when (showEncryptionKeys.value) {
+                            when (uiState.showEncryptionKeys) {
                                 true -> {
-                                    showEncryptionKeys.value = false
+                                    uiState.showEncryptionKeys = false
                                     buttonText.value = "Show"
                                 }
 
                                 false -> {
                                     if (password.value.isNotBlank()) {
-                                        showConfirmPassswordDialog.value = true
+                                        uiState.showConfirmPassswordDialog = true
                                     } else {
-                                        showEncryptionKeys.value = true
+                                        uiState.showEncryptionKeys = true
                                         buttonText.value = "Hide"
                                     }
                                 }
@@ -191,7 +197,7 @@ fun Content(
                 trailing = {
                     Button(
                         onClick = {
-                            showChangePasswordDialog.value = true
+                            uiState.showChangePasswordDialog = true
                         }
                     ) {
                         Text(stringResource(R.string.settings_pref_set_password_button))
@@ -207,7 +213,7 @@ fun Content(
                     trailing = {
                         Button(
                             onClick = {
-                                showRemovePasswordDialog.value = true
+                                uiState.showRemovePasswordDialog = true
                             }
                         ) {
                             Text(stringResource(R.string.settings_pref_remove_password_button))
@@ -218,7 +224,7 @@ fun Content(
         }
 
 
-        if (showEncryptionKeys.value) {
+        if (uiState.showEncryptionKeys) {
             item {
                 Column {
                     Text(

@@ -9,6 +9,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,15 +49,10 @@ fun Home(
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val locale = LocalLocale.current.platformLocale
-    val context = LocalContext.current
-    val files = context.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
-
-    var showNewFileDialog by remember { mutableStateOf(false) }
-    var showPasswordDialog by remember { mutableStateOf(false) }
+    val files = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
     var navigateToTextEditor by remember { mutableStateOf(false) }
-    var showDeleteFileDialog by remember { mutableStateOf(false) }
-    var showPasswordDeletionDialog by remember { mutableStateOf(false) }
-    var showFirstLaunchDialog by remember { mutableStateOf(false) }
+
+    val uiState = viewModel.uiState
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var selectedFile: File? by remember { mutableStateOf(null) }
@@ -65,60 +61,60 @@ fun Home(
 
     viewModel.checkKeys()
 
-    showFirstLaunchDialog = firstLaunch.value
+    uiState.showFirstLaunchDialog = firstLaunch.value
 
     when {
         navigateToTextEditor -> onTextEditor(selectedFileContents!!, selectedFilePath)
 
-        showDeleteFileDialog -> {
+        uiState.showDeleteFileDialog -> {
             DeleteFileDialog(
                 onDismissRequest = {
-                    showDeleteFileDialog = false
+                    uiState.showDeleteFileDialog = false
                     selectedFileContents = null
                 },
                 file = selectedFile!!
             )
         }
 
-        showNewFileDialog -> {
+        uiState.showNewFileDialog -> {
             NewFileDialog(
                 onDismissRequest = {
-                    showNewFileDialog = false
+                    uiState.showNewFileDialog = false
                 }
             )
         }
 
-        showPasswordDialog -> {
+        uiState.showPasswordDialog -> {
             PasswordDialog(
                 onDismissRequest = {
-                    showPasswordDialog = false
+                    uiState.showPasswordDialog = false
                 },
                 onSuccess = {
                     navigateToTextEditor = true
-                    showPasswordDialog = false
+                    uiState.showPasswordDialog = false
                 },
                 password = password.value
             )
         }
 
-        showPasswordDeletionDialog -> {
+        uiState.showPasswordDeleteFileDialog -> {
             PasswordDialog(
                 onDismissRequest = {
-                    showPasswordDeletionDialog = false
+                    uiState.showPasswordDeleteFileDialog = false
                 },
                 onSuccess = {
-                    showDeleteFileDialog = true
-                    showPasswordDeletionDialog = false
+                    uiState.showDeleteFileDialog = true
+                    uiState.showPasswordDeleteFileDialog = false
                 },
                 password = password.value
             )
         }
 
-        showFirstLaunchDialog -> {
+        uiState.showFirstLaunchDialog -> {
             FirstLaunchDialog(
                 onConfirmation = {
                     viewModel.writeFirstLaunch(false)
-                    showFirstLaunchDialog = false
+                    uiState.showFirstLaunchDialog = false
                 }
             )
         }
@@ -137,13 +133,16 @@ fun Home(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.background
+                ),
                 scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    showNewFileDialog = true
+                    uiState.showNewFileDialog = true
                 },
             ) {
                 Icon(painterResource(R.drawable.ic_edit), stringResource(R.string.new_note))
@@ -186,7 +185,7 @@ fun Home(
                                     selectedFileContents = file.readBytes()
 
                                     if (password.value.isNotBlank()) {
-                                        showPasswordDialog = true
+                                        uiState.showPasswordDialog = true
                                     } else {
                                         navigateToTextEditor = true
                                     }
@@ -197,9 +196,9 @@ fun Home(
                                     selectedFileContents = file.readBytes()
 
                                     if (password.value.isNotBlank()) {
-                                        showPasswordDeletionDialog = true
+                                        uiState.showPasswordDeleteFileDialog = true
                                     } else {
-                                        showDeleteFileDialog = true
+                                        uiState.showDeleteFileDialog = true
                                     }
                                 },
                                 file = file,

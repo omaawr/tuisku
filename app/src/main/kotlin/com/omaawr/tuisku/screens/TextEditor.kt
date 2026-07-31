@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ShareFile
+import com.omaawr.tuisku.viewmodels.TextEditorUiState
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -46,20 +47,12 @@ fun TextEditor(
 ) {
     val viewModel: TextEditorViewModel = koinViewModel()
     val context = LocalContext.current
+    val uiState = viewModel.uiState
 
-    val textFieldState = rememberTextFieldState()
-    val isLoading = remember { mutableStateOf(false) }
-    val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
+    val textFieldState = viewModel.textFieldState
     val shareFile = remember { mutableStateOf(false) }
 
-    if (decryptedData.value !== null) {
-        LaunchedEffect(Unit) {
-            textFieldState.setTextAndPlaceCursorAtEnd(decryptedData.value!!)
-        }
-        isLoading.value = false
-    } else {
-        isLoading.value = true
-    }
+    viewModel.loadDecryptedData(bytes)
 
     if (shareFile.value) ShareFile(textFieldState.text.toString(), context)
 
@@ -77,7 +70,7 @@ fun TextEditor(
                     }
                 },
                 actions = {
-                    if (!isLoading.value) {
+                    if (!uiState.loading) {
                         IconButton(onClick = {
                             viewModel.encrypt(textFieldState.text.toString(), path)
                         }) {
@@ -103,7 +96,7 @@ fun TextEditor(
     ) { innerPadding ->
         Content(
             textFieldState,
-            isLoading,
+            uiState,
             innerPadding
         )
     }
@@ -113,7 +106,7 @@ fun TextEditor(
 @Composable
 fun Content(
     state: TextFieldState,
-    isLoading: MutableState<Boolean>,
+    uiState: TextEditorUiState,
     innerPadding: PaddingValues
 ) {
     LazyColumn(
@@ -121,8 +114,8 @@ fun Content(
             .padding(innerPadding)
             .fillMaxSize()
     ) {
-        when (isLoading.value) {
-            true -> {
+        when {
+            uiState.loading -> {
                 item {
                     Column(
                         modifier = Modifier.fillParentMaxSize(),
@@ -134,7 +127,7 @@ fun Content(
                 }
             }
 
-            false -> {
+            !uiState.loading && !uiState.error -> {
                 item {
                     TextField(
                         modifier = Modifier.fillParentMaxSize(),
@@ -153,6 +146,19 @@ fun Content(
                             disabledIndicatorColor = Color.Transparent
                         )
                     )
+                }
+            }
+
+            uiState.error && !uiState.exception.isNullOrEmpty() -> {
+                item {
+                    Column(
+                        modifier = Modifier.fillParentMaxSize()
+                    ) {
+                        Text(stringResource(R.string.an_error_occurred))
+                        Text(
+                            uiState.exception!!
+                        )
+                    }
                 }
             }
         }
