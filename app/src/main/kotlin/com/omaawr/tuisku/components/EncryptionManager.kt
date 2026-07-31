@@ -16,7 +16,7 @@ class EncryptionManager(
 ) {
     suspend fun encryptFile(bytes: ByteArray, filePath: String) {
         val pattern = Pattern.compile(
-            "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+            "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
         )
 
         val encryptionKeyIsBase64 = pattern.matcher(prefs.getEncryptionKey().first()).matches()
@@ -45,7 +45,7 @@ class EncryptionManager(
 
     suspend fun decryptFile(bytes: ByteArray): String {
         val pattern = Pattern.compile(
-            "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+            "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
         )
 
         val encryptionKeyIsBase64 = pattern.matcher(prefs.getEncryptionKey().first()).matches()
