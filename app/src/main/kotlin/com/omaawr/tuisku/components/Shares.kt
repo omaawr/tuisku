@@ -34,7 +34,11 @@ fun ShareFile(
         if (result.resultCode == Activity.RESULT_OK || result.resultCode == Activity.RESULT_CANCELED) file.delete()
     }
 
+    val chooser = Intent.createChooser(shareIntent, "note")
+
+    chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
     LaunchedEffect(Unit) {
-        intent.launch(Intent.createChooser(shareIntent, "note"))
+        intent.launch(chooser)
     }
 }

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -18,6 +20,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ShareFile
 import com.omaawr.tuisku.viewmodels.TextEditorUiState
@@ -43,11 +47,24 @@ fun TextEditor(
     val viewModel: TextEditorViewModel = koinViewModel()
     val context = LocalContext.current
     val uiState = viewModel.uiState
+    val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
 
-    val textFieldState = viewModel.textFieldState
+    val textFieldState = rememberTextFieldState()
     val shareFile = remember { mutableStateOf(false) }
 
-    viewModel.loadDecryptedData(bytes)
+    when {
+        decryptedData.value !== null -> {
+            LaunchedEffect(Unit) {
+                textFieldState.setTextAndPlaceCursorAtEnd(decryptedData.value!!)
+            }
+
+            uiState.loading = false
+            uiState.loaded = true
+        }
+        decryptedData.value == null -> {
+            uiState.loading = true
+        }
+    }
 
     if (shareFile.value) ShareFile(textFieldState.text.toString(), context)
 
@@ -122,7 +139,7 @@ fun Content(
                 }
             }
 
-            !uiState.loading && !uiState.error -> {
+            uiState.loaded -> {
                 item {
                     TextField(
                         modifier = Modifier.fillParentMaxSize(),
@@ -141,19 +158,6 @@ fun Content(
                             disabledIndicatorColor = Color.Transparent
                         )
                     )
-                }
-            }
-
-            uiState.error && !uiState.exception.isNullOrEmpty() -> {
-                item {
-                    Column(
-                        modifier = Modifier.fillParentMaxSize()
-                    ) {
-                        Text(stringResource(R.string.an_error_occurred))
-                        Text(
-                            uiState.exception!!
-                        )
-                    }
                 }
             }
         }
