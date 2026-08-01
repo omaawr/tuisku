@@ -1,4 +1,4 @@
-package com.omaawr.tuisku.components
+package com.omaawr.tuisku.managers
 
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
@@ -14,25 +14,34 @@ import kotlin.random.asKotlinRandom
 class EncryptionManager(
     private val prefs: Preferences
 ) {
-    suspend fun encryptFile(bytes: ByteArray, filePath: String) {
-        val pattern = Pattern.compile(
-            "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
-        )
+    // (secureRandom bytes wrapped in base64 for backwards compatibility)
+    private val pattern = Pattern.compile(
+        "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+    )
 
+    private suspend fun getEncryptionKey(): ByteArray {
         val encryptionKeyIsBase64 = pattern.matcher(prefs.getEncryptionKey().first()).matches()
-        val ivKeyIsBase64 = pattern.matcher(prefs.getIVKey().first()).matches()
 
-        val key = if (encryptionKeyIsBase64) {
+        return if (encryptionKeyIsBase64) {
             Base64.decode(prefs.getEncryptionKey().first())
         } else {
             prefs.getEncryptionKey().first().toByteArray()
         }
+    }
 
-        val iv = if (ivKeyIsBase64) {
+    private suspend fun getIvKey(): ByteArray {
+        val ivKeyIsBase64 = pattern.matcher(prefs.getIVKey().first()).matches()
+
+        return if (ivKeyIsBase64) {
             Base64.decode(prefs.getIVKey().first())
         } else {
             prefs.getIVKey().first().toByteArray()
         }
+    }
+
+    suspend fun encryptFile(bytes: ByteArray, filePath: String) {
+        val key = getEncryptionKey()
+        val iv = getIvKey()
 
         val cipher = Cipher.getInstance("ChaCha20")
         val mode = Cipher.ENCRYPT_MODE
@@ -44,24 +53,8 @@ class EncryptionManager(
     }
 
     suspend fun decryptFile(bytes: ByteArray): String {
-        val pattern = Pattern.compile(
-            "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
-        )
-
-        val encryptionKeyIsBase64 = pattern.matcher(prefs.getEncryptionKey().first()).matches()
-        val ivKeyIsBase64 = pattern.matcher(prefs.getIVKey().first()).matches()
-
-        val key = if (encryptionKeyIsBase64) {
-            Base64.decode(prefs.getEncryptionKey().first())
-        } else {
-            prefs.getEncryptionKey().first().toByteArray()
-        }
-
-        val iv = if (ivKeyIsBase64) {
-            Base64.decode(prefs.getIVKey().first())
-        } else {
-            prefs.getIVKey().first().toByteArray()
-        }
+        val key = getEncryptionKey()
+        val iv = getIvKey()
 
         val cipher = Cipher.getInstance("ChaCha20")
         val mode = Cipher.DECRYPT_MODE

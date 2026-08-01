@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omaawr.tuisku.components.EncryptionManager
+import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
