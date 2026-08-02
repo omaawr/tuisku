@@ -4,7 +4,6 @@ import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
 import java.io.File
 import java.security.SecureRandom
-import java.util.regex.Pattern
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -15,12 +14,12 @@ class EncryptionManager(
     private val prefs: Preferences
 ) {
     // (secureRandom bytes wrapped in base64 for backwards compatibility)
-    private val pattern = Pattern.compile(
+    private val pattern = Regex(
         "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
     )
 
     private suspend fun getEncryptionKey(): ByteArray {
-        val encryptionKeyIsBase64 = pattern.matcher(prefs.getEncryptionKey().first()).matches()
+        val encryptionKeyIsBase64 = pattern.matches(prefs.getEncryptionKey().first())
 
         return if (encryptionKeyIsBase64) {
             Base64.decode(prefs.getEncryptionKey().first())
@@ -30,7 +29,7 @@ class EncryptionManager(
     }
 
     private suspend fun getIvKey(): ByteArray {
-        val ivKeyIsBase64 = pattern.matcher(prefs.getIVKey().first()).matches()
+        val ivKeyIsBase64 = pattern.matches(prefs.getIVKey().first())
 
         return if (ivKeyIsBase64) {
             Base64.decode(prefs.getIVKey().first())
