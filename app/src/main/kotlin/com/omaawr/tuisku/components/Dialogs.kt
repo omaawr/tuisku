@@ -39,6 +39,10 @@ fun NewFileDialog(
             TextButton(
                 onClick = {
                     when {
+                        textFieldState.text.isBlank() -> {
+                            error.value = true
+                        }
+
                         !textFieldState.text.contains("/") -> {
                             File(ctx.filesDir, "${textFieldState.text}.txt").writeText("")
                             onDismissRequest()

@@ -1,9 +1,11 @@
 package com.omaawr.tuisku.managers
 
+import android.util.Log
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
 import java.io.File
 import java.security.SecureRandom
+import java.util.regex.Pattern
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -19,7 +21,7 @@ class EncryptionManager(
     )
 
     private suspend fun getEncryptionKey(): ByteArray {
-        val encryptionKeyIsBase64 = pattern.matches(prefs.getEncryptionKey().first())
+        val encryptionKeyIsBase64 = prefs.getEncryptionKey().first().length > 32 && pattern.matches(prefs.getEncryptionKey().first())
 
         return if (encryptionKeyIsBase64) {
             Base64.decode(prefs.getEncryptionKey().first())
@@ -29,7 +31,7 @@ class EncryptionManager(
     }
 
     private suspend fun getIvKey(): ByteArray {
-        val ivKeyIsBase64 = pattern.matches(prefs.getIVKey().first())
+        val ivKeyIsBase64 = prefs.getIVKey().first().length > 12
 
         return if (ivKeyIsBase64) {
             Base64.decode(prefs.getIVKey().first())
