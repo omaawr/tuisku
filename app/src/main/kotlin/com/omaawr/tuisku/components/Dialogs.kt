@@ -205,6 +205,10 @@ fun ChangePasswordDialog(
                         previousPasswordTextFieldState.text.toString() != password -> previousPasswordError.value =
                             true
 
+                        newPasswordState.text.toString().isEmpty() || confirmTextFieldState.text.toString().isEmpty() -> {
+                            error.value = true
+                        }
+
                         confirmTextFieldState.text.toString() == newPasswordState.text.toString() -> onSuccess(
                             newPasswordState.text.toString()
                         )
