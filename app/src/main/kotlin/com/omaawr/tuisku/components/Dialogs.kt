@@ -39,16 +39,14 @@ fun NewFileDialog(
             TextButton(
                 onClick = {
                     when {
-                        textFieldState.text.isBlank() -> {
+                        textFieldState.text.isBlank() || textFieldState.text.contains("/") || ctx.filesDir.listFiles()!!
+                            .contains(File(ctx.filesDir, "${textFieldState.text}.txt")) -> {
                             error.value = true
                         }
 
-                        !textFieldState.text.contains("/") -> {
+                        else -> {
                             File(ctx.filesDir, "${textFieldState.text}.txt").writeText("")
                             onDismissRequest()
-                        }
-                        else -> {
-                            error.value = true
                         }
                     }
                 }
@@ -209,7 +207,8 @@ fun ChangePasswordDialog(
                         previousPasswordTextFieldState.text.toString() != password -> previousPasswordError.value =
                             true
 
-                        newPasswordState.text.toString().isEmpty() || confirmTextFieldState.text.toString().isEmpty() -> {
+                        newPasswordState.text.toString()
+                            .isEmpty() || confirmTextFieldState.text.toString().isEmpty() -> {
                             error.value = true
                         }
 
