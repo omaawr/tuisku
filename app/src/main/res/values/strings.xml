@@ -31,4 +31,5 @@
     <string name="new_password">New password</string>
     <string name="password_set_successfully">Password set successfully</string>
     <string name="password_removed_successfully">Password removed successfully</string>
+    <string name="unexpected_error">"An unexpected error has caused Tuisku to crash, the crash logs are down below and can be copied by tapping on it."</string>
 </resources>

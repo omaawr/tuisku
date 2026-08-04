@@ -33,7 +33,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        <activity
+            android:name=".CrashActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Tuisku"
+            android:excludeFromRecents="true"
+            android:process=":crash" />
     </application>
-
-
 </manifest>
