@@ -66,7 +66,11 @@ fun TextEditor(
         }
     }
 
-    if (shareFile.value) ShareFile(textFieldState.text.toString(), context)
+    if (shareFile.value) {
+        ShareFile(textFieldState.text.toString(), context)
+
+        shareFile.value = false
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
