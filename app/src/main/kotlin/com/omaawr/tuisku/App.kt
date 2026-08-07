@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.navigation.Navigator
 import com.omaawr.tuisku.navigation.Screen
 import com.omaawr.tuisku.navigation.rememberNavigationState
@@ -16,9 +19,43 @@ import com.omaawr.tuisku.navigation.toEntries
 import com.omaawr.tuisku.screens.Home
 import com.omaawr.tuisku.screens.Settings
 import com.omaawr.tuisku.screens.TextEditor
+import com.omaawr.tuisku.settings.Preferences
+import kotlinx.coroutines.flow.first
+import org.koin.compose.koinInject
+import java.io.File
 
 @Composable
 fun App() {
+    val ctx = LocalContext.current
+    val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+    val base64Pattern = Regex(
+        "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+    )
+    val encryptionManager = koinInject<EncryptionManager>()
+    val prefs = koinInject<Preferences>()
+
+    LaunchedEffect(Unit) {
+        if (prefs.getEncryptionKey().first().isEmpty()) {
+            prefs.writeEncryptionKey(encryptionManager.generateKey(32))
+        }
+
+        if (prefs.getIVKey().first().isEmpty()) {
+            prefs.writeIVKey(encryptionManager.generateKey(12))
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        files.forEach { file ->
+            if (!base64Pattern.matches(file.nameWithoutExtension)) {
+                val encryptedFilename = encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
+
+                File(ctx.filesDir, "${file.nameWithoutExtension}.txt").renameTo(
+                    File(ctx.filesDir, "$encryptedFilename.encrypted-note")
+                )
+            }
+        }
+    }
+
     val routes = setOf(Screen.Home)
     val navigationState = rememberNavigationState(
         startRoute = Screen.Home,

@@ -33,10 +33,14 @@ import com.omaawr.tuisku.components.FirstLaunchDialog
 import com.omaawr.tuisku.components.NewFileDialog
 import com.omaawr.tuisku.components.Note
 import com.omaawr.tuisku.components.PasswordDialog
+import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.viewmodels.HomeViewModel
+import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.io.File
 import java.text.SimpleDateFormat
+import kotlin.io.encoding.Base64
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,10 +50,11 @@ fun Home(
     onSettings: () -> Unit,
 ) {
     val viewModel: HomeViewModel = koinViewModel()
+    val encryptionManager = koinInject<EncryptionManager>()
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val locale = LocalLocale.current.platformLocale
-    val files = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+    val files = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
     var navigateToTextEditor by remember { mutableStateOf(false) }
 
     val uiState = viewModel.uiState
@@ -58,8 +63,6 @@ fun Home(
     var selectedFile: File? by remember { mutableStateOf(null) }
     var selectedFilePath by remember { mutableStateOf("") }
     var selectedFileContents: ByteArray? by remember { mutableStateOf(null) }
-
-    viewModel.checkKeys()
 
     uiState.showFirstLaunchDialog = firstLaunch.value
 
@@ -178,6 +181,14 @@ fun Home(
                         val date = SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
 
                         item {
+                            val decodedFilename = flow {
+                                emit(
+                                    encryptionManager.decryptFile(
+                                        Base64.decode(file.nameWithoutExtension)
+                                    )
+                                )
+                            }.collectAsStateWithLifecycle(initialValue = "")
+
                             Note(
                                 onClick = {
                                     selectedFile = file
@@ -201,7 +212,7 @@ fun Home(
                                         uiState.showDeleteFileDialog = true
                                     }
                                 },
-                                file = file,
+                                filename = decodedFilename.value,
                                 date = date
                             )
                         }

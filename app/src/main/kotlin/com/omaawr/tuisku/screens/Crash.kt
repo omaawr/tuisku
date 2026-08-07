@@ -2,7 +2,6 @@ package com.omaawr.tuisku.screens
 
 import android.content.ClipData
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

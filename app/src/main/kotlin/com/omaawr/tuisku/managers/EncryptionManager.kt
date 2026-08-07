@@ -51,6 +51,19 @@ class EncryptionManager(
         File(filePath).writeBytes(bytes)
     }
 
+    suspend fun encryptFilename(bytes: ByteArray): String {
+        val key = getEncryptionKey()
+        val iv = getIvKey()
+
+        val cipher = Cipher.getInstance("ChaCha20")
+        val mode = Cipher.ENCRYPT_MODE
+        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+
+        val bytes = cipher.doFinal(bytes)
+
+        return Base64.encode(bytes)
+    }
+
     suspend fun decryptFile(bytes: ByteArray): String {
         val key = getEncryptionKey()
         val iv = getIvKey()

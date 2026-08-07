@@ -1,6 +1,8 @@
 package com.omaawr.tuisku.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -9,16 +11,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.omaawr.tuisku.R
+import com.omaawr.tuisku.managers.EncryptionManager
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import java.io.File
 
 @Composable
 fun NewFileDialog(
-    onDismissRequest: () -> Unit,
+    onDismissRequest: () -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
+    val scope = rememberCoroutineScope()
+    val encryptionManager = koinInject<EncryptionManager>()
     val ctx = LocalContext.current
     val error = remember { mutableStateOf(false) }
 
@@ -29,6 +37,7 @@ fun NewFileDialog(
         text = {
             OutlinedTextField(
                 state = textFieldState,
+                inputTransformation = InputTransformation.maxLength(120),
                 isError = error.value
             )
         },
@@ -40,13 +49,17 @@ fun NewFileDialog(
                 onClick = {
                     when {
                         textFieldState.text.isBlank() || textFieldState.text.contains("/") || ctx.filesDir.listFiles()!!
-                            .contains(File(ctx.filesDir, "${textFieldState.text}.txt")) -> {
+                            .contains(File(ctx.filesDir, "${textFieldState.text}.encrypted-note")) -> {
                             error.value = true
                         }
 
                         else -> {
-                            File(ctx.filesDir, "${textFieldState.text}.txt").writeText("")
-                            onDismissRequest()
+                            scope.launch {
+                                val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
+
+                                File(ctx.filesDir, "$filename.encrypted-note").writeText("")
+                                onDismissRequest()
+                            }
                         }
                     }
                 }

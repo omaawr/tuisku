@@ -12,13 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.io.File
 
 @Composable
 fun Note(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    file: File,
+    filename: String,
     date: String
 ) {
     Card(
@@ -38,7 +37,7 @@ fun Note(
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                file.nameWithoutExtension,
+                filename,
                 fontSize = 18.sp
             )
 

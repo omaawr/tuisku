@@ -5,9 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.settings.Preferences
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 interface HomeUiState {
@@ -27,26 +25,13 @@ private class MutableHomeUiState: HomeUiState {
 }
 
 class HomeViewModel(
-    private val prefs: Preferences,
-    private val encryptionManager: EncryptionManager
+    private val prefs: Preferences
 ) : ViewModel() {
     private val _uiState = MutableHomeUiState()
     val uiState: HomeUiState = _uiState
 
     val notePassword = prefs.getPassword()
     val firstLaunch = prefs.getFirstLaunch()
-
-    fun checkKeys() {
-        viewModelScope.launch {
-            if (prefs.getEncryptionKey().first().isEmpty()) {
-                prefs.writeEncryptionKey(encryptionManager.generateKey(32))
-            }
-
-            if (prefs.getIVKey().first().isEmpty()) {
-                prefs.writeIVKey(encryptionManager.generateKey(12))
-            }
-        }
-    }
 
     fun writeFirstLaunch(value: Boolean) {
         viewModelScope.launch {
