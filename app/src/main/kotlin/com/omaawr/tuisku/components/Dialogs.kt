@@ -119,6 +119,34 @@ fun DeleteFileDialog(
 }
 
 @Composable
+fun NoticeDialog(
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.notice_dialog_title))
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.notice_dialog_desc)
+            )
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Okay")
+            }
+        }
+    )
+}
+
+@Composable
 fun PasswordDialog(
     onDismissRequest: () -> Unit,
     onSuccess: () -> Unit,

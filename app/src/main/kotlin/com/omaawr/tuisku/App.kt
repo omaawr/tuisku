@@ -26,11 +26,6 @@ import java.io.File
 
 @Composable
 fun App() {
-    val ctx = LocalContext.current
-    val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
-    val base64Pattern = Regex(
-        "^(?=.*[+/=])(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
-    )
     val encryptionManager = koinInject<EncryptionManager>()
     val prefs = koinInject<Preferences>()
 
@@ -41,18 +36,6 @@ fun App() {
 
         if (prefs.getIVKey().first().isEmpty()) {
             prefs.writeIVKey(encryptionManager.generateKey(12))
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        files.forEach { file ->
-            if (!base64Pattern.matches(file.nameWithoutExtension)) {
-                val encryptedFilename = encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
-
-                File(ctx.filesDir, "${file.nameWithoutExtension}.txt").renameTo(
-                    File(ctx.filesDir, "$encryptedFilename.encrypted-note")
-                )
-            }
         }
     }
 

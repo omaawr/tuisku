@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +33,10 @@ import com.omaawr.tuisku.components.DeleteFileDialog
 import com.omaawr.tuisku.components.FirstLaunchDialog
 import com.omaawr.tuisku.components.NewFileDialog
 import com.omaawr.tuisku.components.Note
+import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.managers.EncryptionManager
+import com.omaawr.tuisku.settings.Preferences
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.koinViewModel
@@ -51,13 +54,29 @@ fun Home(
 ) {
     val viewModel: HomeViewModel = koinViewModel()
     val encryptionManager = koinInject<EncryptionManager>()
+    val uiState = viewModel.uiState
+    val ctx = LocalContext.current
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val locale = LocalLocale.current.platformLocale
+    val filesWithUnencryptedFilename = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+
+    if (filesWithUnencryptedFilename.isNotEmpty()) {
+        LaunchedEffect(Unit) {
+            filesWithUnencryptedFilename.forEach { file ->
+                val encryptedFilename = encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
+
+                File(ctx.filesDir, "${file.nameWithoutExtension}.txt").renameTo(
+                    File(ctx.filesDir, "$encryptedFilename.encrypted-note")
+                )
+            }
+        }
+
+        uiState.showNoticeDialog = true
+    }
+
     val files = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
     var navigateToTextEditor by remember { mutableStateOf(false) }
-
-    val uiState = viewModel.uiState
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var selectedFile: File? by remember { mutableStateOf(null) }
@@ -68,6 +87,14 @@ fun Home(
 
     when {
         navigateToTextEditor -> onTextEditor(selectedFileContents!!, selectedFilePath)
+
+        uiState.showNoticeDialog -> {
+            NoticeDialog(
+                onDismissRequest = {
+                    uiState.showNoticeDialog = false
+                }
+            )
+        }
 
         uiState.showDeleteFileDialog -> {
             DeleteFileDialog(

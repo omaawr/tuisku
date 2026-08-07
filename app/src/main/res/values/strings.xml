@@ -32,4 +32,6 @@
     <string name="password_set_successfully">Password set successfully</string>
     <string name="password_removed_successfully">Password removed successfully</string>
     <string name="unexpected_error">"An unexpected error has caused Tuisku to crash, the crash logs are down below and can be copied by tapping on it."</string>
+    <string name="notice_dialog_title">Notes\'s filenames are now encrypted internally</string>
+    <string name="notice_dialog_desc">With 1.1.1. Your notes are made a little bit more secure with their filenames encrypted internally, However, as a result of this change, you may not see your notes until you restart the app or going to the Settings page and then back to the Home page.</string>
 </resources>

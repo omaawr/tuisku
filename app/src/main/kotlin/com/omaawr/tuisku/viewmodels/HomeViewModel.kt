@@ -14,6 +14,7 @@ interface HomeUiState {
     var showDeleteFileDialog: Boolean
     var showFirstLaunchDialog: Boolean
     var showPasswordDeleteFileDialog: Boolean
+    var showNoticeDialog: Boolean
 }
 
 private class MutableHomeUiState: HomeUiState {
@@ -22,6 +23,7 @@ private class MutableHomeUiState: HomeUiState {
     override var showDeleteFileDialog: Boolean by mutableStateOf(false)
     override var showFirstLaunchDialog: Boolean by mutableStateOf(false)
     override var showPasswordDeleteFileDialog: Boolean by mutableStateOf(false)
+    override var showNoticeDialog: Boolean by mutableStateOf(false)
 }
 
 class HomeViewModel(
