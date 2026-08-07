@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
@@ -22,7 +21,6 @@ import com.omaawr.tuisku.screens.TextEditor
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
-import java.io.File
 
 @Composable
 fun App() {

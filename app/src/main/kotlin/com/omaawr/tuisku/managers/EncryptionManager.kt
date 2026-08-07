@@ -61,7 +61,7 @@ class EncryptionManager(
 
         val bytes = cipher.doFinal(bytes)
 
-        return Base64.encode(bytes)
+        return Base64.UrlSafe.encode(bytes)
     }
 
     suspend fun decryptFile(bytes: ByteArray): String {

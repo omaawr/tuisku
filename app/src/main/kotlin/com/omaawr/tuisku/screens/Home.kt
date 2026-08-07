@@ -36,7 +36,6 @@ import com.omaawr.tuisku.components.Note
 import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.managers.EncryptionManager
-import com.omaawr.tuisku.settings.Preferences
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.koinViewModel
@@ -211,7 +210,7 @@ fun Home(
                             val decodedFilename = flow {
                                 emit(
                                     encryptionManager.decryptFile(
-                                        Base64.decode(file.nameWithoutExtension)
+                                        Base64.UrlSafe.decode(file.nameWithoutExtension)
                                     )
                                 )
                             }.collectAsStateWithLifecycle(initialValue = "")
