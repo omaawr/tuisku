@@ -82,6 +82,7 @@ fun Content(
     val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
     val disableScreenshots = viewModel.disableScreenshots.collectAsStateWithLifecycle(initialValue = false)
     val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
+    val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = false)
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -127,6 +128,19 @@ fun Content(
                 password = password.value
             )
         }
+
+        uiState.showConfirmPassswordDialogForNotesNames -> {
+            PasswordDialog(
+                onDismissRequest = {
+                    uiState.showConfirmPassswordDialogForNotesNames = false
+                },
+                onSuccess = {
+                    viewModel.writeShowNotesNames(true)
+                    uiState.showConfirmPassswordDialogForNotesNames = false
+                },
+                password = password.value
+            )
+        }
     }
 
     LazyColumn(
@@ -156,6 +170,25 @@ fun Content(
                         checked = useSystemFont.value,
                         onCheckedChange = {
                             viewModel.writeUseSystemFont(it)
+                        },
+                    )
+                }
+            )
+        }
+
+
+        item {
+            SettingsItem(
+                text = { Text(stringResource(R.string.show_notes_names)) },
+                trailing = {
+                    Switch(
+                        checked = showNotesNames.value,
+                        onCheckedChange = {
+                            if (password.value.isNotBlank() && !showNotesNames.value) {
+                                uiState.showConfirmPassswordDialogForNotesNames = true
+                            } else {
+                                viewModel.writeShowNotesNames(it)
+                            }
                         },
                     )
                 }

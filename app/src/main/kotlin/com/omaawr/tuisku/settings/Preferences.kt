@@ -105,4 +105,14 @@ class Preferences(
             settings.copy(firstLaunch = value)
         }
     }
+
+    fun getShowNotesNames(): Flow<Boolean> = context.dataStore.data.map { settings ->
+        settings.showNotesNames
+    }
+
+    suspend fun writeShowNotesNames(value: Boolean) {
+        context.dataStore.updateData { settings ->
+            settings.copy(showNotesNames = value)
+        }
+    }
 }

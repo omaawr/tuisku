@@ -37,6 +37,7 @@ import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.viewmodels.HomeViewModel
+import com.omaawr.tuisku.viewmodels.SelectedFileState
 import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -54,11 +55,22 @@ fun Home(
     val viewModel: HomeViewModel = koinViewModel()
     val encryptionManager = koinInject<EncryptionManager>()
     val uiState = viewModel.uiState
+
     val ctx = LocalContext.current
+    val locale = LocalLocale.current.platformLocale
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    val filesWithUnencryptedFilename = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+    val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
+
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
-    val locale = LocalLocale.current.platformLocale
-    val filesWithUnencryptedFilename = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+    val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = true)
+
+    var navigateToTextEditor by remember { mutableStateOf(false) }
+    var selectedFile by remember { mutableStateOf(SelectedFileState()) }
+
+    uiState.showFirstLaunchDialog = firstLaunch.value
 
     if (filesWithUnencryptedFilename.isNotEmpty()) {
         LaunchedEffect(Unit) {
@@ -74,18 +86,8 @@ fun Home(
         uiState.showNoticeDialog = true
     }
 
-    val files = LocalContext.current.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
-    var navigateToTextEditor by remember { mutableStateOf(false) }
-
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    var selectedFile: File? by remember { mutableStateOf(null) }
-    var selectedFilePath by remember { mutableStateOf("") }
-    var selectedFileContents: ByteArray? by remember { mutableStateOf(null) }
-
-    uiState.showFirstLaunchDialog = firstLaunch.value
-
     when {
-        navigateToTextEditor -> onTextEditor(selectedFileContents!!, selectedFilePath)
+        navigateToTextEditor -> onTextEditor(selectedFile.contents!!, selectedFile.path!!)
 
         uiState.showNoticeDialog -> {
             NoticeDialog(
@@ -99,9 +101,9 @@ fun Home(
             DeleteFileDialog(
                 onDismissRequest = {
                     uiState.showDeleteFileDialog = false
-                    selectedFileContents = null
+                    selectedFile.contents = null
                 },
-                file = selectedFile!!
+                file = selectedFile.file!!
             )
         }
 
@@ -203,40 +205,40 @@ fun Home(
                 }
 
                 else -> {
-                    for (file in files) {
+                    files.forEach { file ->
                         val date = SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
 
                         item {
-                            val decodedFilename = flow {
-                                emit(
-                                    encryptionManager.decryptFile(
-                                        Base64.UrlSafe.decode(file.nameWithoutExtension)
+                            val decodedFilename = if (showNotesNames.value) {
+                                flow {
+                                    emit(
+                                        encryptionManager.decryptFile(
+                                            Base64.UrlSafe.decode(file.nameWithoutExtension)
+                                        )
                                     )
-                                )
-                            }.collectAsStateWithLifecycle(initialValue = "")
+                                }.collectAsStateWithLifecycle(initialValue = "")
+                            } else {
+                                remember { mutableStateOf("***********") }
+                            }
 
                             Note(
                                 onClick = {
-                                    selectedFile = file
-                                    selectedFilePath = file.absolutePath
-                                    selectedFileContents = file.readBytes()
+                                    selectedFile = SelectedFileState(
+                                        file,
+                                        file.absolutePath,
+                                        file.readBytes()
+                                    )
 
-                                    if (password.value.isNotBlank()) {
-                                        uiState.showPasswordDialog = true
-                                    } else {
-                                        navigateToTextEditor = true
-                                    }
+                                    if (password.value.isNotBlank()) uiState.showPasswordDialog = true else navigateToTextEditor = true
                                 },
                                 onLongClick = {
-                                    selectedFile = file
-                                    selectedFilePath = file.absolutePath
-                                    selectedFileContents = file.readBytes()
+                                    selectedFile = SelectedFileState(
+                                        file,
+                                        file.absolutePath,
+                                        file.readBytes()
+                                    )
 
-                                    if (password.value.isNotBlank()) {
-                                        uiState.showPasswordDeleteFileDialog = true
-                                    } else {
-                                        uiState.showDeleteFileDialog = true
-                                    }
+                                    if (password.value.isNotBlank()) uiState.showPasswordDeleteFileDialog = true else uiState.showDeleteFileDialog = true
                                 },
                                 filename = decodedFilename.value,
                                 date = date

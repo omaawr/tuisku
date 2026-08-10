@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.launch
+import java.io.File
 
 interface HomeUiState {
     var showNewFileDialog: Boolean
@@ -26,6 +27,12 @@ private class MutableHomeUiState: HomeUiState {
     override var showNoticeDialog: Boolean by mutableStateOf(false)
 }
 
+class SelectedFileState(
+    var file: File? = null,
+    var path: String? = null,
+    var contents: ByteArray? = null
+)
+
 class HomeViewModel(
     private val prefs: Preferences
 ) : ViewModel() {
@@ -34,6 +41,7 @@ class HomeViewModel(
 
     val notePassword = prefs.getPassword()
     val firstLaunch = prefs.getFirstLaunch()
+    val showNotesNames = prefs.getShowNotesNames()
 
     fun writeFirstLaunch(value: Boolean) {
         viewModelScope.launch {
