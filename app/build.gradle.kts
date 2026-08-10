@@ -16,8 +16,8 @@ android {
         applicationId = "com.omaawr.tuisku"
         minSdk = 28
         targetSdk = 37
-        versionCode = 11
-        versionName = "1.1.1-1"
+        versionCode = 12
+        versionName = "1.1.2"
     }
 
     dependenciesInfo {
