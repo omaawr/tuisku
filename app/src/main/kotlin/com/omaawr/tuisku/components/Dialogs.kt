@@ -48,8 +48,7 @@ fun NewFileDialog(
             TextButton(
                 onClick = {
                     when {
-                        textFieldState.text.isBlank() || textFieldState.text.contains("/") || ctx.filesDir.listFiles()!!
-                            .contains(File(ctx.filesDir, "${textFieldState.text}.encrypted-note")) -> {
+                        textFieldState.text.isBlank() || textFieldState.text.contains("/") -> {
                             error.value = true
                         }
 
@@ -57,8 +56,12 @@ fun NewFileDialog(
                             scope.launch {
                                 val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
 
-                                File(ctx.filesDir, "$filename.encrypted-note").writeText("")
-                                onDismissRequest()
+                                if (File(ctx.filesDir, "$filename.encrypted-note").exists()) {
+                                    error.value = true
+                                } else {
+                                    File(ctx.filesDir, "$filename.encrypted-note").writeText("")
+                                    onDismissRequest()
+                                }
                             }
                         }
                     }
