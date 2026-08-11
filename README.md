@@ -17,3 +17,15 @@ A very shrimple and lightweight app used for storing encrypted notes
 
 ### Credits
 - https://github.com/X1nto/Mauth, for a tiny piece of code that I couldn't figure out at that time
+
+### Build Instructions
+```
+# you need to install:
+# - the android sdk (obviously, set with ANDROID_SDK on loonix)
+# - a jdk like temurin/openjdk (recommended, set with JAVA_HOME on loonix)
+# clone the repository and cd into it
+$ git clone https://github.com/omaawr/tuisku.git && cd tuisku/app
+# compile!! (chmod +x gradlew if not executable)
+$ ../gradlew clean assembleDebug # (or assembleRelease for a release build)
+# apk should now be at ./build/outputs/apk/debug/app-debug.apk (or ./app/release/app-release.apk if its a release build)
+```
