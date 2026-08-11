@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Tuisku</string>
+    <string name="introduction_header">مرحباً بك في Tuisku!</string>
+    <string name="introduction_text">Tuisku هو تطبيق ملاحظات بسيط وخفيف يقوم بتشفير ملاحظاتك باستخدام خوارزمية ChaCha20، تُحفظ الملاحظات داخلياً ويمكن مشاركتها باستخدام زر المشاركة الموجود أعلى محرر الملاحظة، كما يمكنك الاطلاع على مفتاح التشفير الخاص بك من الإعدادات وتعيين كلمة مرور اختيارية لكل ملاحظة لزيادة الأمان بشكل أفضل.</string>
+
+    <string name="new_note">ملاحظة جديدة</string>
+    <string name="save_note">حفظ الملاحظة</string>
+    <string name="share_note">مشاركة الملاحظة</string>
+    <string name="delete_note">حذف الملاحظة؟</string>
+    <string name="delete_note_desc">سيتم حذف هذه الملاحظة</string>
+    <string name="no_notes_found">لا توجد ملاحظات</string>
+    <string name="type_here">اكتب هنا…</string>
+
+    <string name="settings">الإعدادات</string>
+    <string name="go_back">رجوع</string>
+    <string name="confirm">تأكيد</string>
+    <string name="dismiss">إغلاق</string>
+
+    <string name="settings_pref_screenshots">تعطيل لقطات الشاشة</string>
+    <string name="settings_pref_font">استخدام خط النظام بدلاً من Google Sans</string>
+    <string name="settings_encryption_keys">إظهار مفاتيح التشفير (غير مُستحسن)</string>
+    <string name="settings_pref_set_password">تعيين كلمة مرور للملاحظات</string>
+    <string name="settings_pref_set_password_button">تعيين/تغيير</string>
+    <string name="settings_pref_remove_password">إزالة كلمة المرور عن الملاحظات</string>
+    <string name="settings_pref_remove_password_button">إزالة</string>
+
+    <string name="enter_password">أدخل كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="previous_password">كلمة المرور السابقة</string>
+    <string name="set_password">تعيين كلمة المرور</string>
+    <string name="new_password">كلمة المرور الجديدة</string>
+    <string name="password_set_successfully">تم تعيين كلمة المرور بنجاح</string>
+    <string name="password_removed_successfully">تم إزالة كلمة المرور بنجاح</string>
+    <string name="unexpected_error">"حدث خطأ غير متوقع تسبب في إغلاق Tuisku بشكل مفاجئ، سجلات الخطأ موضحة أدناه ويمكن نسخها بالنقر عليها."</string>
+    <string name="notice_dialog_title">أسماء ملفات الملاحظات مشفّرة الآن داخلياً</string>
+    <string name="notice_dialog_desc">مع الإصدار 1.1.1. أصبحت ملاحظاتك أكثر أماناً بقليل بفضل تشفير أسماء ملفاتها داخلياً، ومع ذلك، ونتيجة لهذا التغيير، قد لا تظهر ملاحظاتك حتى تعيد تشغيل التطبيق أو تنتقل إلى صفحة الإعدادات ثم ترجع إلى الصفحة الرئيسية.</string>
+    <string name="show_notes_names">إظهار أسماء الملاحظات في الصفحة الرئيسية</string>
+</resources>
