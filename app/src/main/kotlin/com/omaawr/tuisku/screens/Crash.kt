@@ -3,14 +3,17 @@ package com.omaawr.tuisku.screens
 import android.content.ClipData
 import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,23 +31,40 @@ import androidx.compose.ui.unit.sp
 import com.omaawr.tuisku.R
 
 @Composable
-fun CrashScreen(
+fun Crash(
+    exception: String
+) {
+    Scaffold { innerPadding ->
+        Content(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            exception = exception
+        )
+    }
+}
+
+@Composable
+private fun Content(
+    modifier: Modifier,
     exception: String
 ) {
     val clipboard = LocalClipboard.current.nativeClipboardManager
     val ctx = LocalContext.current
 
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-        ) {
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
             Text(stringResource(R.string.unexpected_error))
+        }
 
-            Spacer(Modifier.height(8.dp))
+        item {
+            Spacer(modifier.height(8.dp))
+        }
 
+        item {
             Surface(
                 modifier = Modifier
                     .clip(

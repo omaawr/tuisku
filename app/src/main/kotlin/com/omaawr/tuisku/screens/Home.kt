@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,7 +45,10 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.text.SimpleDateFormat
 import kotlin.io.encoding.Base64
+import kotlin.io.nameWithoutExtension
+import kotlin.io.readBytes
 
+// home page doesnt use the stateless Content() function format because files list won't reload properly when doing that for some reason(?)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
@@ -205,45 +209,47 @@ fun Home(
                 }
 
                 else -> {
-                    files.forEach { file ->
+                    items(
+                        items = files
+                    ) { file ->
                         val date = SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
 
-                        item {
-                            val decodedFilename = if (showNotesNames.value) {
-                                flow {
-                                    emit(
-                                        encryptionManager.decryptFile(
-                                            Base64.UrlSafe.decode(file.nameWithoutExtension)
-                                        )
+                        val decodedFilename = if (showNotesNames.value) {
+                            flow {
+                                emit(
+                                    encryptionManager.decryptFile(
+                                        Base64.UrlSafe.decode(file.nameWithoutExtension)
                                     )
-                                }.collectAsStateWithLifecycle(initialValue = "")
-                            } else {
-                                remember { mutableStateOf("***********") }
-                            }
-
-                            Note(
-                                onClick = {
-                                    selectedFile = SelectedFileState(
-                                        file,
-                                        file.absolutePath,
-                                        file.readBytes()
-                                    )
-
-                                    if (password.value.isNotBlank()) uiState.showPasswordDialog = true else navigateToTextEditor = true
-                                },
-                                onLongClick = {
-                                    selectedFile = SelectedFileState(
-                                        file,
-                                        file.absolutePath,
-                                        file.readBytes()
-                                    )
-
-                                    if (password.value.isNotBlank()) uiState.showPasswordDeleteFileDialog = true else uiState.showDeleteFileDialog = true
-                                },
-                                filename = decodedFilename.value,
-                                date = date
-                            )
+                                )
+                            }.collectAsStateWithLifecycle(initialValue = "")
+                        } else {
+                            remember { mutableStateOf("***********") }
                         }
+
+                        Note(
+                            onClick = {
+                                selectedFile = SelectedFileState(
+                                    file,
+                                    file.absolutePath,
+                                    file.readBytes()
+                                )
+
+                                if (password.value.isNotBlank()) uiState.showPasswordDialog =
+                                    true else navigateToTextEditor = true
+                            },
+                            onLongClick = {
+                                selectedFile = SelectedFileState(
+                                    file,
+                                    file.absolutePath,
+                                    file.readBytes()
+                                )
+
+                                if (password.value.isNotBlank()) uiState.showPasswordDeleteFileDialog =
+                                    true else uiState.showDeleteFileDialog = true
+                            },
+                            filename = decodedFilename.value,
+                            date = date
+                        )
                     }
                 }
             }

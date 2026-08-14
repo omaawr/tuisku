@@ -15,7 +15,7 @@ interface TextEditorUiState {
     var loaded: Boolean
 }
 
-private class MutableTextEditorUiState: TextEditorUiState {
+private class MutableTextEditorUiState : TextEditorUiState {
     override var loading: Boolean by mutableStateOf(false)
     override var loaded: Boolean by mutableStateOf(false)
 }

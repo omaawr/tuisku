@@ -1,11 +1,14 @@
 package com.omaawr.tuisku.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,23 +16,29 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ChangePasswordDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.SettingsItem
+import com.omaawr.tuisku.viewmodels.SettingsUiState
 import com.omaawr.tuisku.viewmodels.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,6 +47,17 @@ import org.koin.androidx.compose.koinViewModel
 fun Settings(
     onBack: () -> Unit
 ) {
+    val viewModel: SettingsViewModel = koinViewModel()
+    val uiState = viewModel.uiState
+
+    val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = "")
+    val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
+    val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
+    val disableScreenshots =
+        viewModel.disableScreenshots.collectAsStateWithLifecycle(initialValue = false)
+    val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
+    val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = false)
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
@@ -63,26 +83,47 @@ fun Settings(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            encryptionKey = encryptionKey,
+            ivKey = ivKey,
+            useSystemFont = useSystemFont,
+            disableScreenshots = disableScreenshots,
+            password = password,
+            showNotesNames = showNotesNames,
+            uiState = uiState,
+            onWritePassword = {
+                viewModel.writePassword(it)
+            },
+            onWriteShowNotesNames = {
+                viewModel.writeShowNotesNames(it)
+            },
+            onWriteDisableScreenshots = {
+                viewModel.writeDisableScreenshots(it)
+            },
+            onWriteSystemFont = {
+                viewModel.writeUseSystemFont(it)
+            }
         )
     }
 }
 
 @Composable
-fun Content(
-    modifier: Modifier
+private fun Content(
+    modifier: Modifier,
+    encryptionKey: State<String>,
+    ivKey: State<String>,
+    useSystemFont: State<Boolean>,
+    disableScreenshots: State<Boolean>,
+    password: State<String>,
+    showNotesNames: State<Boolean>,
+    uiState: SettingsUiState,
+    onWritePassword: (value: String) -> Unit,
+    onWriteShowNotesNames: (value: Boolean) -> Unit,
+    onWriteDisableScreenshots: (value: Boolean) -> Unit,
+    onWriteSystemFont: (value: Boolean) -> Unit
 ) {
-    val viewModel: SettingsViewModel = koinViewModel()
     val context = LocalContext.current
     val buttonText = remember { mutableStateOf("Show") }
-    val uiState = viewModel.uiState
-    
-    val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = "")
-    val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
-    val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
-    val disableScreenshots = viewModel.disableScreenshots.collectAsStateWithLifecycle(initialValue = false)
-    val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
-    val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = false)
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -91,7 +132,8 @@ fun Content(
                     uiState.showChangePasswordDialog = false
                 },
                 onSuccess = { password ->
-                    viewModel.writePassword(password)
+                    onWritePassword(password)
+
                     uiState.showChangePasswordDialog = false
                     Toast.makeText(context, R.string.password_set_successfully, Toast.LENGTH_SHORT)
                         .show()
@@ -106,10 +148,14 @@ fun Content(
                     uiState.showRemovePasswordDialog = false
                 },
                 onSuccess = {
-                    viewModel.writePassword("")
+                    onWritePassword("")
+
                     uiState.showRemovePasswordDialog = false
-                    Toast.makeText(context, R.string.password_removed_successfully, Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(
+                        context,
+                        R.string.password_removed_successfully,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 password = password.value
             )
@@ -135,7 +181,7 @@ fun Content(
                     uiState.showConfirmPassswordDialogForNotesNames = false
                 },
                 onSuccess = {
-                    viewModel.writeShowNotesNames(true)
+                    onWriteShowNotesNames(true)
                     uiState.showConfirmPassswordDialogForNotesNames = false
                 },
                 password = password.value
@@ -155,7 +201,7 @@ fun Content(
                     Switch(
                         checked = disableScreenshots.value,
                         onCheckedChange = {
-                            viewModel.writeDisableScreenshots(it)
+                            onWriteDisableScreenshots(it)
                         },
                     )
                 }
@@ -169,7 +215,7 @@ fun Content(
                     Switch(
                         checked = useSystemFont.value,
                         onCheckedChange = {
-                            viewModel.writeUseSystemFont(it)
+                            onWriteSystemFont(it)
                         },
                     )
                 }
@@ -187,7 +233,7 @@ fun Content(
                             if (password.value.isNotBlank() && !showNotesNames.value) {
                                 uiState.showConfirmPassswordDialogForNotesNames = true
                             } else {
-                                viewModel.writeShowNotesNames(it)
+                                onWriteShowNotesNames(it)
                             }
                         },
                     )
@@ -259,13 +305,26 @@ fun Content(
 
         if (uiState.showEncryptionKeys) {
             item {
-                Column {
-                    Text(
-                        "Key: ${encryptionKey.value}"
-                    )
-                    Text(
-                        "IV: ${ivKey.value}"
-                    )
+                Surface(
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(
+                                6.dp, 6.dp, 6.dp, 6.dp
+                            )
+                        ),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                ) {
+                    SelectionContainer(
+                        Modifier
+                            .padding(8.dp)
+                            .horizontalScroll(rememberScrollState()),
+                    ) {
+                        Text(
+                            text = "Key: ${encryptionKey.value}\nIV: ${ivKey.value}",
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
             }
         }

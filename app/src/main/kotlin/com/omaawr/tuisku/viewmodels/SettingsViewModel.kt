@@ -16,7 +16,7 @@ interface SettingsUiState {
     var showConfirmPassswordDialogForNotesNames: Boolean
 }
 
-private class MutableSettingsUiState: SettingsUiState {
+private class MutableSettingsUiState : SettingsUiState {
     override var showEncryptionKeys: Boolean by mutableStateOf(false)
     override var showChangePasswordDialog: Boolean by mutableStateOf(false)
     override var showRemovePasswordDialog: Boolean by mutableStateOf(false)

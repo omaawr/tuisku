@@ -18,7 +18,7 @@ interface HomeUiState {
     var showNoticeDialog: Boolean
 }
 
-private class MutableHomeUiState: HomeUiState {
+private class MutableHomeUiState : HomeUiState {
     override var showNewFileDialog: Boolean by mutableStateOf(false)
     override var showPasswordDialog: Boolean by mutableStateOf(false)
     override var showDeleteFileDialog: Boolean by mutableStateOf(false)

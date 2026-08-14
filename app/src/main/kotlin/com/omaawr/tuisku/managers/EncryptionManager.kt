@@ -19,7 +19,9 @@ class EncryptionManager(
     )
 
     private suspend fun getEncryptionKey(): ByteArray {
-        val encryptionKeyIsBase64 = prefs.getEncryptionKey().first().length > 32 && pattern.matches(prefs.getEncryptionKey().first())
+        val encryptionKeyIsBase64 = prefs.getEncryptionKey().first().length > 32 && pattern.matches(
+            prefs.getEncryptionKey().first()
+        )
 
         return if (encryptionKeyIsBase64) {
             Base64.decode(prefs.getEncryptionKey().first())

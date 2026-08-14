@@ -2,7 +2,6 @@ package com.omaawr.tuisku.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -46,12 +45,18 @@ fun TextEditor(
     onBack: () -> Unit
 ) {
     val viewModel: TextEditorViewModel = koinViewModel()
-    val context = LocalContext.current
     val uiState = viewModel.uiState
     val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
 
     val textFieldState = rememberTextFieldState()
     val shareFile = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    if (shareFile.value) {
+        ShareFile(textFieldState.text.toString(), context)
+
+        shareFile.value = false
+    }
 
     when {
         decryptedData.value !== null -> {
@@ -62,15 +67,10 @@ fun TextEditor(
             uiState.loading = false
             uiState.loaded = true
         }
+
         decryptedData.value == null -> {
             uiState.loading = true
         }
-    }
-
-    if (shareFile.value) {
-        ShareFile(textFieldState.text.toString(), context)
-
-        shareFile.value = false
     }
 
     Scaffold(
@@ -105,32 +105,31 @@ fun TextEditor(
                                 contentDescription = stringResource(R.string.share_note)
                             )
                         }
-
                     }
                 },
             )
         }
     ) { innerPadding ->
         Content(
-            textFieldState,
-            uiState,
-            innerPadding
+            modifier = Modifier
+                .padding(innerPadding)
+                .imePadding()
+                .fillMaxSize(),
+            textFieldState = textFieldState,
+            uiState = uiState
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun Content(
-    state: TextFieldState,
-    uiState: TextEditorUiState,
-    innerPadding: PaddingValues
+private fun Content(
+    modifier: Modifier,
+    textFieldState: TextFieldState,
+    uiState: TextEditorUiState
 ) {
     LazyColumn(
-        modifier = Modifier
-            .padding(innerPadding)
-            .imePadding()
-            .fillMaxSize()
+        modifier = modifier
     ) {
         when {
             uiState.loading -> {
@@ -152,7 +151,7 @@ fun Content(
                         placeholder = {
                             Text(stringResource(R.string.type_here))
                         },
-                        state = state,
+                        state = textFieldState,
                         colors = TextFieldDefaults.colors(
                             // i should probably do something about this
                             focusedContainerColor = Color.Transparent,
