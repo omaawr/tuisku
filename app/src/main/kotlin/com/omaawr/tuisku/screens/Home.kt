@@ -45,10 +45,9 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.text.SimpleDateFormat
 import kotlin.io.encoding.Base64
-import kotlin.io.nameWithoutExtension
-import kotlin.io.readBytes
 
-// home page doesnt use the stateless Content() function format because files list won't reload properly when doing that for some reason(?)
+// home page doesnt use the stateless Content() function format because notes list won't reload properly when doing that for some reason(?)
+// its fine though
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
