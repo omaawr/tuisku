@@ -110,11 +110,14 @@ fun Home(
         }
 
         uiState.showDeleteFileDialog -> {
+            LaunchedEffect(Unit) {
+                sheetState.hide()
+                uiState.showBottomSheet = false
+            }
+
             DeleteFileDialog(
                 onDismissRequest = {
                     uiState.showDeleteFileDialog = false
-                    uiState.showBottomSheet = false
-
                     selectedFile.contents = null
                 },
                 file = selectedFile.file!!
@@ -156,10 +159,14 @@ fun Home(
         }
 
         uiState.showRenameNoteDialog -> {
+            LaunchedEffect(Unit) {
+                sheetState.hide()
+                uiState.showBottomSheet = false
+            }
+
             RenameFileDialog(
                 onDismissRequest = {
                     uiState.showRenameNoteDialog = false
-                    uiState.showBottomSheet = false
                 },
                 file = selectedFile.file!!
             )

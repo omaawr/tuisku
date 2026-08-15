@@ -2,12 +2,11 @@ package com.omaawr.tuisku.components
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -15,10 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.managers.EncryptionManager
 import kotlinx.coroutines.launch
@@ -142,19 +139,11 @@ fun RenameFileDialog(
             Text(text = stringResource(R.string.rename_note_bottom_sheet))
         },
         text = {
-            Column {
-                Text(
-                    stringResource(R.string.may_take_a_reload)
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    state = textFieldState,
-                    inputTransformation = InputTransformation.maxLength(120),
-                    isError = error.value
-                )
-            }
+            OutlinedTextField(
+                state = textFieldState,
+                inputTransformation = InputTransformation.maxLength(120),
+                isError = error.value
+            )
         },
         onDismissRequest = {
             onDismissRequest()
@@ -239,9 +228,9 @@ fun PasswordDialog(
             Text(text = stringResource(R.string.enter_password))
         },
         text = {
-            OutlinedTextField(
+            OutlinedSecureTextField(
                 state = textFieldState,
-                isError = error.value
+                isError = error.value,
             )
         },
         onDismissRequest = {
