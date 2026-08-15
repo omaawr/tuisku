@@ -1,6 +1,7 @@
 package com.omaawr.tuisku.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,10 +11,15 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
@@ -36,6 +43,7 @@ import com.omaawr.tuisku.components.NewFileDialog
 import com.omaawr.tuisku.components.Note
 import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
+import com.omaawr.tuisku.components.RenameFileDialog
 import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import com.omaawr.tuisku.viewmodels.SelectedFileState
@@ -72,6 +80,7 @@ fun Home(
 
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf(SelectedFileState()) }
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 
     uiState.showFirstLaunchDialog = firstLaunch.value
 
@@ -104,6 +113,8 @@ fun Home(
             DeleteFileDialog(
                 onDismissRequest = {
                     uiState.showDeleteFileDialog = false
+                    uiState.showBottomSheet = false
+
                     selectedFile.contents = null
                 },
                 file = selectedFile.file!!
@@ -131,16 +142,26 @@ fun Home(
             )
         }
 
-        uiState.showPasswordDeleteFileDialog -> {
+        uiState.showPasswordForBottomSheet -> {
             PasswordDialog(
                 onDismissRequest = {
-                    uiState.showPasswordDeleteFileDialog = false
+                    uiState.showPasswordForBottomSheet = false
                 },
                 onSuccess = {
-                    uiState.showDeleteFileDialog = true
-                    uiState.showPasswordDeleteFileDialog = false
+                    uiState.showBottomSheet = true
+                    uiState.showPasswordForBottomSheet = false
                 },
                 password = password.value
+            )
+        }
+
+        uiState.showRenameNoteDialog -> {
+            RenameFileDialog(
+                onDismissRequest = {
+                    uiState.showRenameNoteDialog = false
+                    uiState.showBottomSheet = false
+                },
+                file = selectedFile.file!!
             )
         }
 
@@ -183,6 +204,63 @@ fun Home(
             }
         },
     ) { innerPadding ->
+        val colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent,
+            trailingIconColor = MaterialTheme.colorScheme.onSurface,
+            headlineColor = MaterialTheme.colorScheme.onSurface
+        )
+
+        if (uiState.showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    uiState.showBottomSheet = false
+                },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ListItem(
+                        content = {
+                            Text(stringResource(R.string.rename_note_bottom_sheet))
+                        },
+                        leadingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_edit),
+                                contentDescription = null
+                            )
+                        },
+                        onClick = {
+                            uiState.showRenameNoteDialog = true
+                        },
+                        colors = colors
+                    )
+
+                    ListItem(
+                        content = {
+                            Text(
+                                text = stringResource(R.string.delete_note_bottom_sheet),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        leadingContent = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_delete),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        onClick = {
+                            uiState.showDeleteFileDialog = true
+                        },
+                        colors = colors
+                    )
+                }
+            }
+        }
+
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
@@ -211,7 +289,8 @@ fun Home(
                     items(
                         items = files
                     ) { file ->
-                        val date = SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
+                        val date =
+                            SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
 
                         val decodedFilename = if (showNotesNames.value) {
                             flow {
@@ -243,8 +322,8 @@ fun Home(
                                     file.readBytes()
                                 )
 
-                                if (password.value.isNotBlank()) uiState.showPasswordDeleteFileDialog =
-                                    true else uiState.showDeleteFileDialog = true
+                                if (password.value.isNotBlank()) uiState.showPasswordForBottomSheet =
+                                    true else uiState.showBottomSheet = true
                             },
                             filename = decodedFilename.value,
                             date = date

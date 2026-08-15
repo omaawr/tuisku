@@ -14,8 +14,10 @@ interface HomeUiState {
     var showPasswordDialog: Boolean
     var showDeleteFileDialog: Boolean
     var showFirstLaunchDialog: Boolean
-    var showPasswordDeleteFileDialog: Boolean
+    var showPasswordForBottomSheet: Boolean
+    var showBottomSheet: Boolean
     var showNoticeDialog: Boolean
+    var showRenameNoteDialog: Boolean
 }
 
 private class MutableHomeUiState : HomeUiState {
@@ -23,7 +25,9 @@ private class MutableHomeUiState : HomeUiState {
     override var showPasswordDialog: Boolean by mutableStateOf(false)
     override var showDeleteFileDialog: Boolean by mutableStateOf(false)
     override var showFirstLaunchDialog: Boolean by mutableStateOf(false)
-    override var showPasswordDeleteFileDialog: Boolean by mutableStateOf(false)
+    override var showBottomSheet: Boolean by mutableStateOf(false)
+    override var showPasswordForBottomSheet: Boolean by mutableStateOf(false)
+    override var showRenameNoteDialog: Boolean by mutableStateOf(false)
     override var showNoticeDialog: Boolean by mutableStateOf(false)
 }
 

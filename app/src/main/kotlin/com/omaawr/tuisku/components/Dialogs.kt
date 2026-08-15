@@ -1,6 +1,9 @@
 package com.omaawr.tuisku.components
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -12,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.managers.EncryptionManager
 import kotlinx.coroutines.launch
@@ -104,6 +109,77 @@ fun DeleteFileDialog(
                 onClick = {
                     file.delete()
                     onDismissRequest()
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text(stringResource(R.string.dismiss))
+            }
+        }
+    )
+}
+
+@Composable
+fun RenameFileDialog(
+    onDismissRequest: () -> Unit,
+    file: File
+) {
+    val textFieldState = rememberTextFieldState()
+    val scope = rememberCoroutineScope()
+    val encryptionManager = koinInject<EncryptionManager>()
+    val ctx = LocalContext.current
+    val error = remember { mutableStateOf(false) }
+
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.rename_note_bottom_sheet))
+        },
+        text = {
+            Column {
+                Text(
+                    stringResource(R.string.may_take_a_reload)
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    state = textFieldState,
+                    inputTransformation = InputTransformation.maxLength(120),
+                    isError = error.value
+                )
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    when {
+                        textFieldState.text.isBlank() || textFieldState.text.contains("/") -> {
+                            error.value = true
+                        }
+
+                        else -> {
+                            scope.launch {
+                                val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
+
+                                file.renameTo(
+                                    File(ctx.filesDir, "$filename.encrypted-note")
+                                )
+                                onDismissRequest()
+
+                                Toast.makeText(ctx, R.string.note_renamed_successfully, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 }
             ) {
                 Text(stringResource(R.string.confirm))
