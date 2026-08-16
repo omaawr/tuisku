@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
@@ -21,9 +22,11 @@ import com.omaawr.tuisku.screens.TextEditor
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
+import java.io.File
 
 @Composable
 fun App() {
+    val context = LocalContext.current
     val encryptionManager = koinInject<EncryptionManager>()
     val prefs = koinInject<Preferences>()
 
@@ -34,6 +37,16 @@ fun App() {
 
         if (prefs.getIVKey().first().isEmpty()) {
             prefs.writeIVKey(encryptionManager.generateKey(12))
+        }
+    }
+
+    // 1.1.3-1 and earlier used to use the cache for when the user tries to store a note,
+    // the note sometimes wouldn't delete on exit, however, with 1.1.4, it doesn't have to cache a note to share
+    // so if theres a note on cache, it gets deleted on startup
+
+    LaunchedEffect(Unit) {
+        if (File(context.cacheDir, "note.txt").exists()) {
+            File(context.cacheDir, "note.txt").delete()
         }
     }
 

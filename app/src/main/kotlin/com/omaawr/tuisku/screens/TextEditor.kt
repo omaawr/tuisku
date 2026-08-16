@@ -50,10 +50,9 @@ fun TextEditor(
 
     val textFieldState = rememberTextFieldState()
     val shareFile = remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     if (shareFile.value) {
-        ShareFile(textFieldState.text.toString(), context)
+        ShareFile(textFieldState.text.toString())
 
         shareFile.value = false
     }
