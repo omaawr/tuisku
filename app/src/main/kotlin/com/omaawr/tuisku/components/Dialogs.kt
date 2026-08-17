@@ -270,7 +270,8 @@ fun ChangePasswordDialog(
     val newPasswordState = rememberTextFieldState()
     val confirmTextFieldState = rememberTextFieldState()
 
-    val error = remember { mutableStateOf(false) }
+    val newPasswordError = remember { mutableStateOf(false) }
+    val confirmPasswordError = remember { mutableStateOf(false) }
     val previousPasswordError = remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -280,7 +281,7 @@ fun ChangePasswordDialog(
         text = {
             Column {
                 if (password.isNotBlank()) {
-                    OutlinedTextField(
+                    OutlinedSecureTextField(
                         state = previousPasswordTextFieldState,
                         label = {
                             Text(stringResource(R.string.previous_password))
@@ -289,20 +290,20 @@ fun ChangePasswordDialog(
                     )
                 }
 
-                OutlinedTextField(
+                OutlinedSecureTextField(
                     state = newPasswordState,
                     label = {
                         Text(stringResource(R.string.new_password))
                     },
-                    isError = error.value
+                    isError = newPasswordError.value
                 )
 
-                OutlinedTextField(
+                OutlinedSecureTextField(
                     state = confirmTextFieldState,
                     label = {
                         Text(stringResource(R.string.confirm_password))
                     },
-                    isError = error.value
+                    isError = confirmPasswordError.value
                 )
             }
         },
@@ -312,20 +313,29 @@ fun ChangePasswordDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    when {
-                        previousPasswordTextFieldState.text.toString() != password -> previousPasswordError.value =
-                            true
+                    previousPasswordError.value = false
+                    newPasswordError.value = false
+                    confirmPasswordError.value = false
 
-                        newPasswordState.text.toString()
-                            .isEmpty() || confirmTextFieldState.text.toString().isEmpty() -> {
-                            error.value = true
+                    when {
+                        previousPasswordTextFieldState.text != password -> previousPasswordError.value = true
+
+                        newPasswordState.text.isEmpty() -> {
+                            newPasswordError.value = true
                         }
 
-                        confirmTextFieldState.text.toString() == newPasswordState.text.toString() -> onSuccess(
+                        confirmTextFieldState.text.isEmpty() -> {
+                            confirmPasswordError.value = true
+                        }
+
+                        newPasswordState.text != confirmTextFieldState.text -> {
+                            newPasswordError.value = true
+                            confirmPasswordError.value = true
+                        }
+
+                        confirmTextFieldState.text == newPasswordState.text -> onSuccess(
                             newPasswordState.text.toString()
                         )
-
-                        else -> error.value = true
                     }
                 }
             ) {
