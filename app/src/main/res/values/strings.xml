@@ -38,6 +38,6 @@
     <string name="notice_dialog_desc">With 1.1.1. Your notes are made a little bit more secure with their filenames encrypted internally, However, as a result of this change, you may not see your notes until you restart the app or going to the Settings page and then back to the Home page.</string>
     <string name="show_notes_names">Show notes names on the Home page</string>
     <string name="note_renamed_successfully">Note renamed successfully</string>
-    <string name="another_notice_dialog_title">"A critical security flaw has been fixed and your encryption key has been regenerated"</string>
+    <string name="another_notice_dialog_title">"A critical security flaw has been fixed and your notes nonces has been regenerated"</string>
     <string name="another_notice_dialog_desc">"Your notes are migrated to the new key under a new filename which is typically "new-note-number", so you may have to rename the note. The contents of the note are still safe and exactly the same as beforehand, sorry about that security flaw :("</string>
 </resources>
