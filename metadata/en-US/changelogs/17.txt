@@ -1,0 +1,2 @@
+Changelogs:
+- CRITICAL: Fix security flaw involving nonce being used twice, please update Tuisku (if you can) if you want to keep your notes secure.
