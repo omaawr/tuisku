@@ -48,6 +48,7 @@ import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import com.omaawr.tuisku.viewmodels.SelectedFileState
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.take
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
@@ -306,7 +307,7 @@ fun Home(
                                         Base64.UrlSafe.decode(file.nameWithoutExtension)
                                     )
                                 )
-                            }.collectAsStateWithLifecycle(initialValue = "")
+                            }.take(1).collectAsStateWithLifecycle(initialValue = "")
                         } else {
                             remember { mutableStateOf("***********") }
                         }

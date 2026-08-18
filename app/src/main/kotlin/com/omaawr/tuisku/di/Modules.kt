@@ -20,7 +20,8 @@ val appModule = module {
 
     single<EncryptionManager> {
         EncryptionManager(
-            get()
+            get(),
+            androidContext()
         )
     }
 }

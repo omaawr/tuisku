@@ -21,6 +21,7 @@ import com.omaawr.tuisku.managers.EncryptionManager
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.io.File
+import java.security.SecureRandom
 
 @Composable
 fun NewFileDialog(
@@ -56,12 +57,17 @@ fun NewFileDialog(
 
                         else -> {
                             scope.launch {
+                                val secureRandom = SecureRandom()
+                                val nonce = ByteArray(12)
+
+                                secureRandom.nextBytes(nonce)
+
                                 val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
 
                                 if (File(ctx.filesDir, "$filename.encrypted-note").exists()) {
                                     error.value = true
                                 } else {
-                                    File(ctx.filesDir, "$filename.encrypted-note").writeText("")
+                                    File(ctx.filesDir, "$filename.encrypted-note").writeBytes(nonce)
                                     onDismissRequest()
                                 }
                             }
@@ -197,6 +203,34 @@ fun NoticeDialog(
         text = {
             Text(
                 text = stringResource(R.string.notice_dialog_desc)
+            )
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Okay")
+            }
+        }
+    )
+}
+
+@Composable
+fun AnotherNoticeDialog(
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        title = {
+            Text(text = "A critical security flaw has been fixed and your encryption key has been regenerated")
+        },
+        text = {
+            Text(
+                text = "Your notes are migrated to the new key under a new filename however, so they're still secure, sorry about that security flaw :("
             )
         },
         onDismissRequest = {

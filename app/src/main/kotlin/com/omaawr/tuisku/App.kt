@@ -26,27 +26,34 @@ import java.io.File
 
 @Composable
 fun App() {
-    val context = LocalContext.current
+    val ctx = LocalContext.current
     val encryptionManager = koinInject<EncryptionManager>()
     val prefs = koinInject<Preferences>()
+    val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
     LaunchedEffect(Unit) {
-        if (prefs.getEncryptionKey().first().isEmpty()) {
-            prefs.writeEncryptionKey(encryptionManager.generateKey(32))
+        if (files.isNotEmpty() && prefs.getIVKey().first().isNotEmpty()) {
+            files.forEachIndexed { index, file ->
+                encryptionManager.migrateFile(
+                    index,
+                    file
+                )
+            }
         }
 
-        if (prefs.getIVKey().first().isEmpty()) {
-            prefs.writeIVKey(encryptionManager.generateKey(12))
+        if (prefs.getEncryptionKey().first().isEmpty() && !prefs.getKeysRegenerated().first()) {
+            prefs.writeEncryptionKey(encryptionManager.generateKey(32))
+            
+            prefs.writeKeysRegenerated(true)
         }
     }
 
-    // 1.1.3-1 and earlier used to use the cache for when the user tries to store a note,
+    // 1.1.3-1 and earlier used to use the cache for when the user tries to share a note,
     // the note sometimes wouldn't delete on exit, however, with 1.1.4, it doesn't have to cache a note to share
     // so if theres a note on cache, it gets deleted on startup
-
     LaunchedEffect(Unit) {
-        if (File(context.cacheDir, "note.txt").exists()) {
-            File(context.cacheDir, "note.txt").delete()
+        if (File(ctx.cacheDir, "note.txt").exists()) {
+            File(ctx.cacheDir, "note.txt").delete()
         }
     }
 

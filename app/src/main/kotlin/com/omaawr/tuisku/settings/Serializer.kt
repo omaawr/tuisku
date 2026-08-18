@@ -12,12 +12,13 @@ import java.io.OutputStream
 @Serializable
 data class Settings(
     val encryptionKey: String = "",
-    val viKey: String = "",
+    val viKey: String = "", // somehow i misspelled this while i was sleepy, this isn't used anymore
     val password: String = "",
     val useSystemFont: Boolean = false,
     val disableScreenshots: Boolean = false,
     val firstLaunch: Boolean = true,
-    val showNotesNames: Boolean = true
+    val showNotesNames: Boolean = true,
+    val keysRegenerated: Boolean = false
 )
 
 object SettingsSerializer : Serializer<Settings> {

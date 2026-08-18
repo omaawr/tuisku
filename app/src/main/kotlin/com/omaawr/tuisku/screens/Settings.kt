@@ -51,7 +51,6 @@ fun Settings(
     val uiState = viewModel.uiState
 
     val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = "")
-    val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
     val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
     val disableScreenshots =
         viewModel.disableScreenshots.collectAsStateWithLifecycle(initialValue = false)
@@ -85,7 +84,6 @@ fun Settings(
                 .padding(16.dp)
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             encryptionKey = encryptionKey,
-            ivKey = ivKey,
             useSystemFont = useSystemFont,
             disableScreenshots = disableScreenshots,
             password = password,
@@ -111,7 +109,6 @@ fun Settings(
 private fun Content(
     modifier: Modifier,
     encryptionKey: State<String>,
-    ivKey: State<String>,
     useSystemFont: State<Boolean>,
     disableScreenshots: State<Boolean>,
     password: State<String>,
@@ -320,7 +317,7 @@ private fun Content(
                             .horizontalScroll(rememberScrollState()),
                     ) {
                         Text(
-                            text = "Key: ${encryptionKey.value}\nIV: ${ivKey.value}",
+                            text = "Key: ${encryptionKey.value}",
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp
                         )

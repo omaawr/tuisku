@@ -60,12 +60,6 @@ class Preferences(
         settings.viKey
     }
 
-    suspend fun writeIVKey(value: String) {
-        context.dataStore.updateData { settings ->
-            settings.copy(viKey = value)
-        }
-    }
-
     fun getUseSystemFont(): Flow<Boolean> = context.dataStore.data.map { settings ->
         settings.useSystemFont
     }
@@ -113,6 +107,16 @@ class Preferences(
     suspend fun writeShowNotesNames(value: Boolean) {
         context.dataStore.updateData { settings ->
             settings.copy(showNotesNames = value)
+        }
+    }
+
+    fun getKeysRegenerated(): Flow<Boolean> = context.dataStore.data.map { settings ->
+        settings.keysRegenerated
+    }
+
+    suspend fun writeKeysRegenerated(value: Boolean) {
+        context.dataStore.updateData { settings ->
+            settings.copy(keysRegenerated = value)
         }
     }
 }

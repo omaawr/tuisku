@@ -31,7 +31,6 @@ class SettingsViewModel(
     val uiState: SettingsUiState = _uiState
 
     val encryptionKey = prefs.getEncryptionKey()
-    val ivKey = prefs.getIVKey()
     val useSystemFont = prefs.getUseSystemFont()
     val disableScreenshots = prefs.getDisableScreenshots()
     val showNotesNames = prefs.getShowNotesNames()

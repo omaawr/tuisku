@@ -1,8 +1,10 @@
 package com.omaawr.tuisku.managers
 
+import android.content.Context
 import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.first
 import java.io.File
+import java.nio.ByteBuffer
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -11,7 +13,8 @@ import kotlin.io.encoding.Base64
 import kotlin.random.asKotlinRandom
 
 class EncryptionManager(
-    private val prefs: Preferences
+    private val prefs: Preferences,
+    private val context: Context
 ) {
     // (secureRandom bytes wrapped in base64 for backwards compatibility)
     private val pattern = Regex(
@@ -30,53 +33,83 @@ class EncryptionManager(
         }
     }
 
-    private suspend fun getIvKey(): ByteArray {
-        val ivKeyIsBase64 = prefs.getIVKey().first().length > 12
+    private fun getIvKey(): ByteArray {
+        val secureRandom = SecureRandom()
+        val byteArray = ByteArray(12)
 
-        return if (ivKeyIsBase64) {
-            Base64.decode(prefs.getIVKey().first())
-        } else {
-            prefs.getIVKey().first().toByteArray()
-        }
+        secureRandom.asKotlinRandom().nextBytes(byteArray)
+
+        return byteArray
     }
 
-    suspend fun encryptFile(bytes: ByteArray, filePath: String) {
+    suspend fun migrateFile(index: Int, file: File) {
         val key = getEncryptionKey()
-        val iv = getIvKey()
+        val oldNonce = prefs.getIVKey().first().toByteArray()
 
         val cipher = Cipher.getInstance("ChaCha20")
-        val mode = Cipher.ENCRYPT_MODE
-        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        val mode = Cipher.DECRYPT_MODE
+        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(oldNonce))
 
-        val bytes = cipher.doFinal(bytes)
+        val bytes = cipher.doFinal(file.readBytes())
+        val newFile = File(context.filesDir, "new-note-$index")
 
-        File(filePath).writeBytes(bytes)
+        newFile.writeBytes(bytes)
+        encryptFile(newFile.readBytes(), newFile.path)
+
+        val encryptedFilename = encryptFilename(newFile.nameWithoutExtension.toByteArray())
+
+        newFile.renameTo(
+            File(context.filesDir, "$encryptedFilename.encrypted-note")
+        )
+
+        file.delete()
+    }
+
+    suspend fun encryptFile(plain: ByteArray, filePath: String) {
+        val key = getEncryptionKey()
+        val cipher = Cipher.getInstance("ChaCha20")
+
+        val iv = getIvKey()
+
+        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        val ciphered = cipher.doFinal(plain)
+
+        File(filePath).writeBytes(ByteBuffer.allocate(ciphered.size + 12)
+            .put(ciphered)
+            .put(iv)
+            .array())
     }
 
     suspend fun encryptFilename(bytes: ByteArray): String {
         val key = getEncryptionKey()
+        val cipher = Cipher.getInstance("ChaCha20")
+
         val iv = getIvKey()
 
-        val cipher = Cipher.getInstance("ChaCha20")
-        val mode = Cipher.ENCRYPT_MODE
-        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        val ciphered = cipher.doFinal(bytes)
 
-        val bytes = cipher.doFinal(bytes)
-
-        return Base64.UrlSafe.encode(bytes)
+        return Base64.UrlSafe.encode(ByteBuffer.allocate(ciphered.size + 12)
+            .put(ciphered)
+            .put(iv)
+            .array())
     }
 
     suspend fun decryptFile(bytes: ByteArray): String {
         val key = getEncryptionKey()
-        val iv = getIvKey()
+        val buffer: ByteBuffer = ByteBuffer.wrap(bytes)
 
+        val encryptedText = ByteArray(bytes.size - 12)
+        val nonce = ByteArray(12)
+        buffer.get(encryptedText)
+        buffer.get(nonce)
+
+        val iv = IvParameterSpec(nonce)
         val cipher = Cipher.getInstance("ChaCha20")
-        val mode = Cipher.DECRYPT_MODE
-        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        val mode = Cipher.ENCRYPT_MODE
+        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), iv)
 
-        val bytes = cipher.doFinal(bytes)
-
-        return String(bytes)
+        return String(cipher.doFinal(encryptedText))
     }
 
     fun generateKey(length: Int): String {
