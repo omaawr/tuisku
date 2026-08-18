@@ -226,11 +226,11 @@ fun AnotherNoticeDialog(
 ) {
     AlertDialog(
         title = {
-            Text(text = "A critical security flaw has been fixed and your encryption key has been regenerated")
+            Text(text = stringResource(R.string.another_notice_dialog_title))
         },
         text = {
             Text(
-                text = "Your notes are migrated to the new key under a new filename however, so they're still secure, sorry about that security flaw :("
+                text = stringResource(R.string.another_notice_dialog_desc)
             )
         },
         onDismissRequest = {

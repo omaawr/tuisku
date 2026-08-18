@@ -29,18 +29,8 @@ fun App() {
     val ctx = LocalContext.current
     val encryptionManager = koinInject<EncryptionManager>()
     val prefs = koinInject<Preferences>()
-    val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
     LaunchedEffect(Unit) {
-        if (files.isNotEmpty() && prefs.getIVKey().first().isNotEmpty()) {
-            files.forEachIndexed { index, file ->
-                encryptionManager.migrateFile(
-                    index,
-                    file
-                )
-            }
-        }
-
         if (prefs.getEncryptionKey().first().isEmpty() && !prefs.getKeysRegenerated().first()) {
             prefs.writeEncryptionKey(encryptionManager.generateKey(32))
             

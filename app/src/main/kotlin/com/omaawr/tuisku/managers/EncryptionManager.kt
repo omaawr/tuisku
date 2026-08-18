@@ -44,25 +44,24 @@ class EncryptionManager(
 
     suspend fun migrateFile(index: Int, file: File) {
         val key = getEncryptionKey()
-        val oldNonce = prefs.getIVKey().first().toByteArray()
+        val oldNonce = Base64.decode(prefs.getIVKey().first())
 
         val cipher = Cipher.getInstance("ChaCha20")
         val mode = Cipher.DECRYPT_MODE
         cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(oldNonce))
 
         val bytes = cipher.doFinal(file.readBytes())
-        val newFile = File(context.filesDir, "new-note-$index")
+        val newFile = File(context.filesDir, "new-note-$index.migrated-note")
+
+        val encryptedFilename = encryptFilename(newFile.nameWithoutExtension.toByteArray())
 
         newFile.writeBytes(bytes)
         encryptFile(newFile.readBytes(), newFile.path)
-
-        val encryptedFilename = encryptFilename(newFile.nameWithoutExtension.toByteArray())
+        file.delete()
 
         newFile.renameTo(
             File(context.filesDir, "$encryptedFilename.encrypted-note")
         )
-
-        file.delete()
     }
 
     suspend fun encryptFile(plain: ByteArray, filePath: String) {
@@ -106,7 +105,7 @@ class EncryptionManager(
 
         val iv = IvParameterSpec(nonce)
         val cipher = Cipher.getInstance("ChaCha20")
-        val mode = Cipher.ENCRYPT_MODE
+        val mode = Cipher.DECRYPT_MODE
         cipher.init(mode, SecretKeySpec(key, "ChaCha20"), iv)
 
         return String(cipher.doFinal(encryptedText))

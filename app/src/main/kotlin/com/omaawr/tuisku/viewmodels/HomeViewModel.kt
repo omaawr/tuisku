@@ -18,6 +18,7 @@ interface HomeUiState {
     var showBottomSheet: Boolean
     var showNoticeDialog: Boolean
     var showRenameNoteDialog: Boolean
+    var showAnotherNoticeDialog: Boolean
 }
 
 private class MutableHomeUiState : HomeUiState {
@@ -29,6 +30,7 @@ private class MutableHomeUiState : HomeUiState {
     override var showPasswordForBottomSheet: Boolean by mutableStateOf(false)
     override var showRenameNoteDialog: Boolean by mutableStateOf(false)
     override var showNoticeDialog: Boolean by mutableStateOf(false)
+    override var showAnotherNoticeDialog: Boolean by mutableStateOf(false)
 }
 
 class SelectedFileState(
@@ -46,10 +48,17 @@ class HomeViewModel(
     val notePassword = prefs.getPassword()
     val firstLaunch = prefs.getFirstLaunch()
     val showNotesNames = prefs.getShowNotesNames()
+    val ivKey = prefs.getIVKey()
 
     fun writeFirstLaunch(value: Boolean) {
         viewModelScope.launch {
             prefs.writeFirstLaunch(value)
+        }
+    }
+
+    fun writeIvKey(value: String) {
+        viewModelScope.launch {
+            prefs.writeIVKey(value)
         }
     }
 }

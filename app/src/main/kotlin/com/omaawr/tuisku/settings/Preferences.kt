@@ -60,6 +60,12 @@ class Preferences(
         settings.viKey
     }
 
+    suspend fun writeIVKey(value: String) {
+        context.dataStore.updateData { settings ->
+            settings.copy(viKey = value)
+        }
+    }
+
     fun getUseSystemFont(): Flow<Boolean> = context.dataStore.data.map { settings ->
         settings.useSystemFont
     }

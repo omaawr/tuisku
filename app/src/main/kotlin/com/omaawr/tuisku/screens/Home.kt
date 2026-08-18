@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
+import com.omaawr.tuisku.components.AnotherNoticeDialog
 import com.omaawr.tuisku.components.DeleteFileDialog
 import com.omaawr.tuisku.components.FirstLaunchDialog
 import com.omaawr.tuisku.components.NewFileDialog
@@ -47,8 +49,8 @@ import com.omaawr.tuisku.components.RenameFileDialog
 import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import com.omaawr.tuisku.viewmodels.SelectedFileState
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
@@ -71,9 +73,10 @@ fun Home(
     val ctx = LocalContext.current
     val locale = LocalLocale.current.platformLocale
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
 
     val filesWithUnencryptedFilename = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
-    val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
+    var files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
@@ -99,8 +102,35 @@ fun Home(
         uiState.showNoticeDialog = true
     }
 
+    if (files.isNotEmpty() && ivKey.value.isNotEmpty()) {
+        LaunchedEffect(Unit) {
+            withContext(Dispatchers.IO) {
+                files.forEachIndexed { index, file ->
+                    encryptionManager.migrateFile(
+                        index,
+                        file
+                    )
+                }
+
+                files = ctx.filesDir.listFiles()?.filter { it.name.contains(".encrypted-note") }
+                    ?: emptyList()
+            }
+
+            uiState.showAnotherNoticeDialog = true
+            viewModel.writeIvKey("")
+        }
+    }
+
     when {
         navigateToTextEditor -> onTextEditor(selectedFile.contents!!, selectedFile.path!!)
+
+        uiState.showAnotherNoticeDialog -> {
+            AnotherNoticeDialog(
+                onDismissRequest = {
+                    uiState.showAnotherNoticeDialog = false
+                }
+            )
+        }
 
         uiState.showNoticeDialog -> {
             NoticeDialog(
@@ -171,6 +201,7 @@ fun Home(
                 },
                 file = selectedFile.file!!
             )
+
         }
 
         uiState.showFirstLaunchDialog -> {
@@ -301,13 +332,15 @@ fun Home(
                             SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
 
                         val decodedFilename = if (showNotesNames.value) {
-                            flow {
-                                emit(
+                            produceState(initialValue = "", key1 = file.nameWithoutExtension) {
+                                value = try {
                                     encryptionManager.decryptFile(
                                         Base64.UrlSafe.decode(file.nameWithoutExtension)
                                     )
-                                )
-                            }.take(1).collectAsStateWithLifecycle(initialValue = "")
+                                } catch (_: Exception) {
+                                    "restart may be required to render this filename :("
+                                }
+                            }
                         } else {
                             remember { mutableStateOf("***********") }
                         }
