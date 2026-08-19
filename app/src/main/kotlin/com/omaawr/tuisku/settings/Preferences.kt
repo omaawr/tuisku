@@ -17,9 +17,16 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Tuisku preferences using an encrypted DataStore with tink, many of the functions here are to set/write to preferences
+ * (e.g getUseSystemFont and writeUseSystemFont)
+ *
+ * @param context - Android context (provided by dependency injection, Koin)
+ * @param application - Application context (provided by Koin)
+ */
 class Preferences(
     private val context: Context,
-    private val application: Application
+    application: Application
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

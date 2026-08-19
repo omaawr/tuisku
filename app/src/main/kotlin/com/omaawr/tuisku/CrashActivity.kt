@@ -7,6 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import com.omaawr.tuisku.screens.Crash
 import com.omaawr.tuisku.ui.theme.TuiskuTheme
 
+/**
+ * Crash activity, used for when Tuisku crashes (obviously)
+ */
 class CrashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

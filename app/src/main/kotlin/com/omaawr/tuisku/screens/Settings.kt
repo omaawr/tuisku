@@ -42,6 +42,11 @@ import com.omaawr.tuisku.viewmodels.SettingsUiState
 import com.omaawr.tuisku.viewmodels.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Settings page
+ *
+ * @param onBack - Upon navigating back to the home page
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings(

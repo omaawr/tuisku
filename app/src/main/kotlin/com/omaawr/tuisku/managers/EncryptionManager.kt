@@ -12,6 +12,12 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.io.encoding.Base64
 import kotlin.random.asKotlinRandom
 
+/**
+ * Tuisku's Encryption manager, handiling encryption/decryption (obviously)
+ *
+ * @param context - Android context (provided by dependency injection, Koin)
+ * @param prefs - Preferences, for getting the master key (also known as the encryption key)
+ */
 class EncryptionManager(
     private val prefs: Preferences,
     private val context: Context
@@ -42,21 +48,28 @@ class EncryptionManager(
         return byteArray
     }
 
+    /**
+     * Migrating notes with the critical security flaw (nonces being used twice) to secure notes by decrypting bytes and reencrypting them to a secure one
+     *
+     * (somehow i didnt notice this for a while because i was very dumb at security guh)
+     * @param index - Current index of the note
+     * @param file - Note file (obviously)
+     * @since 1.2.0
+     */
     suspend fun migrateFile(index: Int, file: File) {
         val key = getEncryptionKey()
         val oldNonce = Base64.decode(prefs.getIVKey().first()) // somehow i was super dumb at security at first so i thought iv was something to keep hidden when it was actually a nonce..
 
-        val cipher = Cipher.getInstance("ChaCha20")
-        val mode = Cipher.DECRYPT_MODE
-        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(oldNonce))
+        val cipher = Cipher.getInstance("ChaCha20").apply {
+            init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(oldNonce))
+        }
 
         val bytes = cipher.doFinal(file.readBytes())
         val newFile = File(context.filesDir, "new-note-$index.migrated-note")
 
         val encryptedFilename = encryptFilename(newFile.nameWithoutExtension.toByteArray())
 
-        newFile.writeBytes(bytes)
-        encryptFile(newFile.readBytes(), newFile.path)
+        encryptFile(bytes, newFile.path)
         file.delete()
 
         newFile.renameTo(
@@ -64,13 +77,20 @@ class EncryptionManager(
         )
     }
 
+    /**
+     * Encrypting a note's content
+     *
+     * @param plain - Bytes to be encrypted with the ChaCha20 algorithm (and also the nonce block of course)
+     * @param filePath - Path to the file to write encrypted bytes to
+     */
     suspend fun encryptFile(plain: ByteArray, filePath: String) {
         val key = getEncryptionKey()
-        val cipher = Cipher.getInstance("ChaCha20")
-
         val iv = getRandomNonce()
 
-        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        val cipher = Cipher.getInstance("ChaCha20").apply {
+            init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        }
+
         val ciphered = cipher.doFinal(plain)
 
         File(filePath).writeBytes(ByteBuffer.allocate(ciphered.size + 12)
@@ -79,13 +99,19 @@ class EncryptionManager(
             .array())
     }
 
+    /**
+     * Encrypting a note's filename, same as encryptFile() but it returns Base64 Urlsafe encoded bytes
+     *
+     * @param bytes - Bytes to be encrypted with the ChaCha20 algorithm (and also the nonce block of course)
+     */
     suspend fun encryptFilename(bytes: ByteArray): String {
         val key = getEncryptionKey()
-        val cipher = Cipher.getInstance("ChaCha20")
-
         val iv = getRandomNonce()
 
-        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        val cipher = Cipher.getInstance("ChaCha20").apply {
+            init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
+        }
+
         val ciphered = cipher.doFinal(bytes)
 
         return Base64.UrlSafe.encode(ByteBuffer.allocate(ciphered.size + 12)
@@ -94,6 +120,12 @@ class EncryptionManager(
             .array())
     }
 
+    /**
+     * Decrypting a note's content
+     *
+     * @param bytes - Bytes to be encrypted with the ChaCha20 algorithm (and also the nonce block of course)
+     * @return The decrypted content
+     */
     suspend fun decryptFile(bytes: ByteArray): String {
         val key = getEncryptionKey()
         val buffer: ByteBuffer = ByteBuffer.wrap(bytes)
@@ -104,13 +136,18 @@ class EncryptionManager(
         buffer.get(nonce)
 
         val iv = IvParameterSpec(nonce)
-        val cipher = Cipher.getInstance("ChaCha20")
-        val mode = Cipher.DECRYPT_MODE
-        cipher.init(mode, SecretKeySpec(key, "ChaCha20"), iv)
+        val cipher = Cipher.getInstance("ChaCha20").apply {
+            init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "ChaCha20"), iv)
+        }
 
         return String(cipher.doFinal(encryptedText))
     }
 
+    /**
+     * Generate a key with SecureRandom
+     *
+     * @param length - Number of bytes to generate (soon to be 32 only since this is only for generating the master key)
+     */
     fun generateKey(length: Int): String {
         val secureRandom = SecureRandom()
         val byteArray = ByteArray(length)

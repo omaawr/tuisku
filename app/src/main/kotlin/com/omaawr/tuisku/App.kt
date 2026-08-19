@@ -24,6 +24,9 @@ import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
 import java.io.File
 
+/**
+ * App entry point (obviously)
+ */
 @Composable
 fun App() {
     val ctx = LocalContext.current

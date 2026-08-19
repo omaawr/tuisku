@@ -64,12 +64,8 @@ fun NewFileDialog(
 
                                 val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
 
-                                if (File(ctx.filesDir, "$filename.encrypted-note").exists()) {
-                                    error.value = true
-                                } else {
-                                    File(ctx.filesDir, "$filename.encrypted-note").writeBytes(nonce)
-                                    onDismissRequest()
-                                }
+                                File(ctx.filesDir, "$filename.encrypted-note").writeBytes(nonce)
+                                onDismissRequest()
                             }
                         }
                     }

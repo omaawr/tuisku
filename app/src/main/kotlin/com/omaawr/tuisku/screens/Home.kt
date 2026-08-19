@@ -1,7 +1,6 @@
 package com.omaawr.tuisku.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,10 +10,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -29,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
@@ -43,6 +38,7 @@ import com.omaawr.tuisku.components.DeleteFileDialog
 import com.omaawr.tuisku.components.FirstLaunchDialog
 import com.omaawr.tuisku.components.NewFileDialog
 import com.omaawr.tuisku.components.Note
+import com.omaawr.tuisku.components.NoteBottomSheet
 import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.RenameFileDialog
@@ -59,6 +55,14 @@ import kotlin.io.encoding.Base64
 
 // home page doesnt use the stateless Content() function format because notes list won't reload properly when doing that for some reason(?)
 // its fine though
+
+/**
+ * Home page, usually containing the notes to navigate to
+ *
+ * @param modifier - Modifier for the hoem page (usually unused by default)
+ * @param onTextEditor - Upon navigation to the text editor page.. usually having bytes and the file path passed, of course
+ * @param onSettings - Upon navigation to settings
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
@@ -100,6 +104,10 @@ fun Home(
         }
 
         uiState.showNoticeDialog = true
+    }
+
+    if (files.isEmpty() && ivKey.value.isNotEmpty()) {
+        viewModel.writeIvKey("")
     }
 
     if (files.isNotEmpty() && ivKey.value.isNotEmpty()) {
@@ -243,61 +251,19 @@ fun Home(
             }
         },
     ) { innerPadding ->
-        val colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent,
-            trailingIconColor = MaterialTheme.colorScheme.onSurface,
-            headlineColor = MaterialTheme.colorScheme.onSurface
-        )
-
         if (uiState.showBottomSheet) {
-            ModalBottomSheet(
+            NoteBottomSheet(
                 onDismissRequest = {
                     uiState.showBottomSheet = false
                 },
-                sheetState = sheetState
-            ) {
-                Column(
-                    modifier = Modifier.padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    ListItem(
-                        content = {
-                            Text(stringResource(R.string.rename_note_bottom_sheet))
-                        },
-                        leadingContent = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_edit),
-                                contentDescription = null
-                            )
-                        },
-                        onClick = {
-                            uiState.showRenameNoteDialog = true
-                        },
-                        colors = colors
-                    )
-
-                    ListItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.delete_note_bottom_sheet),
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        leadingContent = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_delete),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        onClick = {
-                            uiState.showDeleteFileDialog = true
-                        },
-                        colors = colors
-                    )
+                sheetState = sheetState,
+                onRenameNoteClick = {
+                    uiState.showRenameNoteDialog = true
+                },
+                onDeleteNoteClick = {
+                    uiState.showDeleteFileDialog = true
                 }
-            }
+            )
         }
 
         LazyColumn(

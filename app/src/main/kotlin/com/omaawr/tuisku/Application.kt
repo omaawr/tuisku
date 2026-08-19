@@ -17,7 +17,9 @@ class Application : android.app.Application() {
             return
         }
 
-        Thread.setDefaultUncaughtExceptionHandler { _, exception ->
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+
+        Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             try {
                 val intent = Intent(this, CrashActivity::class.java).apply {
                     putExtra("exception", Log.getStackTraceString(exception))
@@ -27,6 +29,10 @@ class Application : android.app.Application() {
                 startActivity(intent)
             } catch (e: Exception) {
                 Log.e("Tuisku", "Failed to start CrashActivity", e)
+            } finally {
+                if (defaultHandler != null) {
+                    defaultHandler.uncaughtException(thread, exception)
+                }
             }
         }
 

@@ -27,6 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.omaawr.tuisku.R
 
+/**
+ * Crash screen to be used with CrashActivity
+ *
+ * @param exception - The exception to display, provided by the crash
+ * @since 1.1.0
+ */
 @Composable
 fun Crash(
     exception: String

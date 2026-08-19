@@ -35,6 +35,14 @@ import com.omaawr.tuisku.viewmodels.TextEditorUiState
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Text editor page
+ *
+ * @param modifier - Modifier for the page (usually unused aswell)
+ * @param bytes - Content passed on by the Home page to be decrypted
+ * @param path - File path to be used to save the encrypted content
+ * @param onBack - Upon navigating back (obviously)
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TextEditor(
