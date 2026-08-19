@@ -33,7 +33,7 @@ class EncryptionManager(
         }
     }
 
-    private fun getIvKey(): ByteArray {
+    private fun getRandomNonce(): ByteArray {
         val secureRandom = SecureRandom()
         val byteArray = ByteArray(12)
 
@@ -44,7 +44,7 @@ class EncryptionManager(
 
     suspend fun migrateFile(index: Int, file: File) {
         val key = getEncryptionKey()
-        val oldNonce = Base64.decode(prefs.getIVKey().first())
+        val oldNonce = Base64.decode(prefs.getIVKey().first()) // somehow i was super dumb at security at first so i thought iv was something to keep hidden when it was actually a nonce..
 
         val cipher = Cipher.getInstance("ChaCha20")
         val mode = Cipher.DECRYPT_MODE
@@ -68,7 +68,7 @@ class EncryptionManager(
         val key = getEncryptionKey()
         val cipher = Cipher.getInstance("ChaCha20")
 
-        val iv = getIvKey()
+        val iv = getRandomNonce()
 
         cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
         val ciphered = cipher.doFinal(plain)
@@ -83,7 +83,7 @@ class EncryptionManager(
         val key = getEncryptionKey()
         val cipher = Cipher.getInstance("ChaCha20")
 
-        val iv = getIvKey()
+        val iv = getRandomNonce()
 
         cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(iv))
         val ciphered = cipher.doFinal(bytes)
