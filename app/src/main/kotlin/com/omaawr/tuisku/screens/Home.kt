@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -76,6 +77,7 @@ fun Home(
 
     val ctx = LocalContext.current
     val locale = LocalLocale.current.platformLocale
+    val resc = LocalResources.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
 
@@ -304,7 +306,7 @@ fun Home(
                                         Base64.UrlSafe.decode(file.nameWithoutExtension)
                                     )
                                 } catch (_: Exception) {
-                                    "restart may be required to render this filename :("
+                                    resc.getString(R.string.filename_error)
                                 }
                             }
                         } else {

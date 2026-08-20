@@ -6,6 +6,7 @@ activityCompose = "1.13.0"
 kotlin = "2.4.10"
 composeBom = "2026.08.00"
 nav3Core = "1.1.6"
+lifecycleViewmodelNav3 = "2.12.0-alpha01"
 kotlinSerialization = "2.4.10"
 kotlinxSerializationCore = "1.11.0"
 koin-bom = "4.2.2"
@@ -29,6 +30,7 @@ koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

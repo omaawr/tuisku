@@ -8,14 +8,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.omaawr.tuisku.managers.EncryptionManager
-import com.omaawr.tuisku.navigation.Navigator
 import com.omaawr.tuisku.navigation.Screen
-import com.omaawr.tuisku.navigation.rememberNavigationState
-import com.omaawr.tuisku.navigation.toEntries
 import com.omaawr.tuisku.screens.Home
 import com.omaawr.tuisku.screens.Settings
 import com.omaawr.tuisku.screens.TextEditor
@@ -50,25 +50,25 @@ fun App() {
         }
     }
 
-    val routes = setOf(Screen.Home)
-    val navigationState = rememberNavigationState(
-        startRoute = Screen.Home,
-        topLevelRoutes = routes
-    )
+    val backStack = rememberNavBackStack(Screen.Home)
+    val onBack = {
+        if (backStack.size >= 2) {
+            backStack.removeLastOrNull()
+        }
+    }
 
-    val navigator = remember { Navigator(navigationState) }
     val entryProvider = entryProvider {
         entry<Screen.Home> {
             Home(
                 modifier = Modifier.fillMaxSize(),
-                onTextEditor = { file, path -> navigator.navigate(Screen.TextEditor(file, path)) },
-                onSettings = { navigator.navigate(Screen.Settings) }
+                onTextEditor = { file, path -> backStack.add(Screen.TextEditor(file, path)) },
+                onSettings = { backStack.add(Screen.Settings) }
             )
         }
 
         entry<Screen.Settings> {
             Settings(
-                onBack = { navigator.goBack() }
+                onBack = onBack
             )
         }
 
@@ -77,7 +77,7 @@ fun App() {
                 modifier = Modifier.fillMaxSize(),
                 bytes = key.fileContents,
                 path = key.filePath,
-                onBack = { navigator.goBack() }
+                onBack = onBack
             )
         }
     }
@@ -85,9 +85,16 @@ fun App() {
     Scaffold { contentPadding ->
         NavDisplay(
             modifier = Modifier.padding(contentPadding),
-            entries = navigationState.toEntries(entryProvider),
-            onBack = { navigator.goBack() },
-            sceneStrategies = remember { listOf(DialogSceneStrategy()) }
+            backStack = backStack,
+            entryProvider = entryProvider,
+            onBack = onBack,
+            sceneStrategies = remember { listOf(DialogSceneStrategy()) },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+
+                // used to destory page's viewmodels on their exit
+                rememberViewModelStoreNavEntryDecorator()
+            )
         )
     }
 }

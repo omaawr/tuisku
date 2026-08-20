@@ -17,6 +17,9 @@
     <string name="go_back">Go back</string>
     <string name="confirm">Confirm</string>
     <string name="dismiss">Dismiss</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="okay">Okay</string>
 
     <string name="settings_pref_screenshots">Disable screenshots</string>
     <string name="settings_pref_font">Use system font instead of Google Sans</string>
@@ -40,4 +43,6 @@
     <string name="note_renamed_successfully">Note renamed successfully</string>
     <string name="another_notice_dialog_title">"A critical security flaw has been fixed and your notes nonces has been regenerated"</string>
     <string name="another_notice_dialog_desc">"Your notes are migrated to the new key under a new filename which is typically "new-note-number", so you may have to rename the note. The contents of the note are still safe and exactly the same as beforehand, sorry about that security flaw :("</string>
+    <string name="filename_error">&lt;an error occurred while rendering this filename, this may be a bomb which crashes the app if tapped on&gt;</string>
+    <string name="note_last_modified_on_date">Last modified on %1$s</string>
 </resources>

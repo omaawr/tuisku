@@ -210,7 +210,7 @@ fun NoticeDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Okay")
+                Text(stringResource(R.string.okay))
             }
         }
     )
@@ -238,7 +238,7 @@ fun AnotherNoticeDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Okay")
+                Text(stringResource(R.string.okay))
             }
         }
     )
@@ -402,7 +402,7 @@ fun FirstLaunchDialog(
                     onConfirmation()
                 }
             ) {
-                Text("Okay")
+                Text(stringResource(R.string.okay))
             }
         }
     )
