@@ -23,6 +23,11 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.security.SecureRandom
 
+/**
+ * New note/file dialog
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ */
 @Composable
 fun NewFileDialog(
     onDismissRequest: () -> Unit
@@ -86,6 +91,12 @@ fun NewFileDialog(
     )
 }
 
+/**
+ * Delete file dialog
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ * @param file - The file selected to be deleted
+ */
 @Composable
 fun DeleteFileDialog(
     onDismissRequest: () -> Unit,
@@ -125,6 +136,13 @@ fun DeleteFileDialog(
     )
 }
 
+/**
+ * Rename note dialog
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ * @param file - The file selected to be renamed
+ * @since 1.1.3
+ */
 @Composable
 fun RenameFileDialog(
     onDismissRequest: () -> Unit,
@@ -188,6 +206,12 @@ fun RenameFileDialog(
     )
 }
 
+/**
+ * Notice dialog
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ * @since 1.1.1
+ */
 @Composable
 fun NoticeDialog(
     onDismissRequest: () -> Unit,
@@ -216,6 +240,12 @@ fun NoticeDialog(
     )
 }
 
+/**
+ * Critical security flaw dialog (flaw which is me being stupid and using IV (nonces) twice)
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ * @since 1.2.0
+ */
 @Composable
 fun AnotherNoticeDialog(
     onDismissRequest: () -> Unit,
@@ -244,6 +274,13 @@ fun AnotherNoticeDialog(
     )
 }
 
+/**
+ * Password conformation dialog
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ * @param onSuccess - Upon the password actually being valid
+ * @param password - Actual user password to check with the provided one
+ */
 @Composable
 fun PasswordDialog(
     onDismissRequest: () -> Unit,
@@ -290,6 +327,13 @@ fun PasswordDialog(
     )
 }
 
+/**
+ * Setting/changing the password in Settings dialog
+ *
+ * @param onDismissRequest - Upon dismissing the dialog
+ * @param onSuccess - Upon the password actually being valid (and also being passed down to set)
+ * @param password - Actual user password to check with the provided one
+ */
 @Composable
 fun ChangePasswordDialog(
     onDismissRequest: () -> Unit,
@@ -384,6 +428,11 @@ fun ChangePasswordDialog(
     )
 }
 
+/**
+ * Greeting dialog
+ *
+ * @param onConfirmation - Upon dismissing the dialog
+ */
 @Composable
 fun FirstLaunchDialog(
     onConfirmation: () -> Unit,

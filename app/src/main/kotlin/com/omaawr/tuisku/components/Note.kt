@@ -15,6 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.omaawr.tuisku.R
 
+/**
+ * Note card
+ *
+ * @param onClick - Upon clicking the note
+ * @param onLongClick - Upon holding the note (which would cause the bottom sheet to spawn)
+ * @param filename - Note filename
+ * @param date - The note's last modified date
+ */
 @Composable
 fun Note(
     onClick: () -> Unit,

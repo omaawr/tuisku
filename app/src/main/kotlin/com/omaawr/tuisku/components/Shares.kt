@@ -5,6 +5,11 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 
+/**
+ * Share a note
+ *
+ * @param text - Unencrypted string to share securely
+ */
 @Composable
 fun ShareFile(
     text: String

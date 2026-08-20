@@ -13,10 +13,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * Settings item
+ *
+ * @param modifier - The settings item's modifier, usually unused
+ * @param text - Settings item text
+ * @param trailing - Trailing content
+ */
 @Composable
 fun SettingsItem(
-    text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    text: @Composable () -> Unit,
     trailing: @Composable (() -> Unit) = { },
 ) {
     Row(
