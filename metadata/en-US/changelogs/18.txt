@@ -1,0 +1,4 @@
+- feat: refine code, follow best practices (and also add documentation)
+- feat: migrate to NavBackStack, migrate existing strings to strings.xml
+- fix: sleepy typo
+- feat(EncryptionManager): rename methods
