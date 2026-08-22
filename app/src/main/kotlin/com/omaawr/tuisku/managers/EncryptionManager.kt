@@ -126,7 +126,7 @@ class EncryptionManager(
      * @param bytes - Bytes to be encrypted with the ChaCha20 algorithm (and also the nonce block of course)
      * @return The decrypted content
      */
-    suspend fun decryptFile(bytes: ByteArray): String {
+    suspend fun decryptBytes(bytes: ByteArray): String {
         val key = getEncryptionKey()
         val buffer: ByteBuffer = ByteBuffer.wrap(bytes)
 
@@ -144,13 +144,38 @@ class EncryptionManager(
     }
 
     /**
-     * Generate a key with SecureRandom
+     * Write a new blank note (with a nonce block of course)
      *
-     * @param length - Number of bytes to generate (soon to be 32 only since this is only for generating the master key)
+     * @param filename - Filename to use
+     * @since 1.2.1
      */
-    fun generateKey(length: Int): String {
+    suspend fun newFile(filename: String) {
+        val nonce = getRandomNonce()
+        val filename = encryptFilename(filename.toByteArray())
+
+        File(context.filesDir, "$filename.encrypted-note").writeBytes(nonce)
+    }
+
+    /**
+     * Rename a note
+     *
+     * @param newFilename - Filename to use
+     * @since 1.2.1
+     */
+    suspend fun renameFile(newFilename: String, file: File) {
+        val filename = encryptFilename(newFilename.toByteArray())
+
+        file.renameTo(
+            File(context.filesDir, "$filename.encrypted-note")
+        )
+    }
+
+    /**
+     * Generate a key with SecureRandom
+     */
+    fun generateKey(): String {
         val secureRandom = SecureRandom()
-        val byteArray = ByteArray(length)
+        val byteArray = ByteArray(32)
 
         secureRandom.asKotlinRandom().nextBytes(byteArray)
 

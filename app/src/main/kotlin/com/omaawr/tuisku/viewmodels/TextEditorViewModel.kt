@@ -33,6 +33,6 @@ class TextEditorViewModel(
     }
 
     fun decrypt(data: ByteArray): Flow<String> = flow {
-        emit(encryptionManager.decryptFile(data))
+        emit(encryptionManager.decryptBytes(data))
     }
 }

@@ -17,8 +17,7 @@ data class Settings(
     val useSystemFont: Boolean = false,
     val disableScreenshots: Boolean = false,
     val firstLaunch: Boolean = true,
-    val showNotesNames: Boolean = true,
-    val keysRegenerated: Boolean = false
+    val showNotesNames: Boolean = true
 )
 
 object SettingsSerializer : Serializer<Settings> {

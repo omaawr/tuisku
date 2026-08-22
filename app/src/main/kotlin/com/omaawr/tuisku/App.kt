@@ -34,10 +34,8 @@ fun App() {
     val prefs = koinInject<Preferences>()
 
     LaunchedEffect(Unit) {
-        if (prefs.getEncryptionKey().first().isEmpty() && !prefs.getKeysRegenerated().first()) {
-            prefs.writeEncryptionKey(encryptionManager.generateKey(32))
-            
-            prefs.writeKeysRegenerated(true)
+        if (prefs.getEncryptionKey().first().isEmpty()) {
+            prefs.writeEncryptionKey(encryptionManager.generateKey())
         }
     }
 

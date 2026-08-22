@@ -302,7 +302,7 @@ fun Home(
                         val decodedFilename = if (showNotesNames.value) {
                             produceState(initialValue = "", key1 = file.nameWithoutExtension) {
                                 value = try {
-                                    encryptionManager.decryptFile(
+                                    encryptionManager.decryptBytes(
                                         Base64.UrlSafe.decode(file.nameWithoutExtension)
                                     )
                                 } catch (_: Exception) {

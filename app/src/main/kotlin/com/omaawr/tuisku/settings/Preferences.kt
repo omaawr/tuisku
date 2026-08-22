@@ -122,14 +122,4 @@ class Preferences(
             settings.copy(showNotesNames = value)
         }
     }
-
-    fun getKeysRegenerated(): Flow<Boolean> = context.dataStore.data.map { settings ->
-        settings.keysRegenerated
-    }
-
-    suspend fun writeKeysRegenerated(value: Boolean) {
-        context.dataStore.updateData { settings ->
-            settings.copy(keysRegenerated = value)
-        }
-    }
 }

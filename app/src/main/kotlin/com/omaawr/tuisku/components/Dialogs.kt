@@ -21,7 +21,6 @@ import com.omaawr.tuisku.managers.EncryptionManager
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.io.File
-import java.security.SecureRandom
 
 /**
  * New note/file dialog
@@ -35,7 +34,6 @@ fun NewFileDialog(
     val textFieldState = rememberTextFieldState()
     val scope = rememberCoroutineScope()
     val encryptionManager = koinInject<EncryptionManager>()
-    val ctx = LocalContext.current
     val error = remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -62,14 +60,7 @@ fun NewFileDialog(
 
                         else -> {
                             scope.launch {
-                                val secureRandom = SecureRandom()
-                                val nonce = ByteArray(12)
-
-                                secureRandom.nextBytes(nonce)
-
-                                val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
-
-                                File(ctx.filesDir, "$filename.encrypted-note").writeBytes(nonce)
+                                encryptionManager.newFile("${textFieldState.text}")
                                 onDismissRequest()
                             }
                         }
@@ -178,11 +169,7 @@ fun RenameFileDialog(
 
                         else -> {
                             scope.launch {
-                                val filename = encryptionManager.encryptFilename("${textFieldState.text}".toByteArray())
-
-                                file.renameTo(
-                                    File(ctx.filesDir, "$filename.encrypted-note")
-                                )
+                                encryptionManager.renameFile("${textFieldState.text}", file)
                                 onDismissRequest()
 
                                 Toast.makeText(ctx, R.string.note_renamed_successfully, Toast.LENGTH_SHORT).show()
