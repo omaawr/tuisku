@@ -14,6 +14,7 @@ interface SettingsUiState {
     var showRemovePasswordDialog: Boolean
     var showConfirmPassswordDialog: Boolean
     var showConfirmPassswordDialogForNotesNames: Boolean
+    fun clear()
 }
 
 private class MutableSettingsUiState : SettingsUiState {
@@ -22,6 +23,14 @@ private class MutableSettingsUiState : SettingsUiState {
     override var showRemovePasswordDialog: Boolean by mutableStateOf(false)
     override var showConfirmPassswordDialog: Boolean by mutableStateOf(false)
     override var showConfirmPassswordDialogForNotesNames: Boolean by mutableStateOf(false)
+
+    override fun clear() {
+        showEncryptionKeys = false
+        showChangePasswordDialog = false
+        showRemovePasswordDialog = false
+        showChangePasswordDialog = false
+        showConfirmPassswordDialogForNotesNames = false
+    }
 }
 
 class SettingsViewModel(

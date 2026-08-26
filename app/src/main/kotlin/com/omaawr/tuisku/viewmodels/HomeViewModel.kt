@@ -19,6 +19,7 @@ interface HomeUiState {
     var showNoticeDialog: Boolean
     var showRenameNoteDialog: Boolean
     var showAnotherNoticeDialog: Boolean
+    fun clear()
 }
 
 private class MutableHomeUiState : HomeUiState {
@@ -31,6 +32,18 @@ private class MutableHomeUiState : HomeUiState {
     override var showRenameNoteDialog: Boolean by mutableStateOf(false)
     override var showNoticeDialog: Boolean by mutableStateOf(false)
     override var showAnotherNoticeDialog: Boolean by mutableStateOf(false)
+
+    override fun clear() {
+        showNewFileDialog = false
+        showPasswordDialog = false
+        showDeleteFileDialog = false
+        showFirstLaunchDialog = false
+        showBottomSheet = false
+        showPasswordForBottomSheet = false
+        showRenameNoteDialog = false
+        showNoticeDialog = false
+        showAnotherNoticeDialog = false
+    }
 }
 
 class SelectedFileState(

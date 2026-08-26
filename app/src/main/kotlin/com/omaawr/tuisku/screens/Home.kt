@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -91,6 +92,14 @@ fun Home(
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf(SelectedFileState()) }
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
+
+    DisposableEffect(Unit) {
+        // somehow theres a ui bug where some dialogs and bottom sheet stay even after navigating to another page
+        // causing a NullPointerException on them since home page and their state is cleared
+        onDispose {
+            uiState.clear()
+        }
+    }
 
     uiState.showFirstLaunchDialog = firstLaunch.value
 

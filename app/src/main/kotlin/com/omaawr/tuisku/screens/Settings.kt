@@ -21,6 +21,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,14 @@ fun Settings(
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = false)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    DisposableEffect(Unit) {
+        // somehow theres a ui bug where some dialogs stay even after navigating to another page
+        // causing a NullPointerException on them since settings page and their state is cleared
+        onDispose {
+            uiState.clear()
+        }
+    }
 
     Scaffold(
         topBar = {
