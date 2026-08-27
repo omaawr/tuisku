@@ -69,7 +69,8 @@ class EncryptionManager(
 
         val encryptedFilename = encryptFilename(newFile.nameWithoutExtension.toByteArray())
 
-        encryptFile(bytes, newFile.path)
+        newFile.writeBytes(bytes)
+        encryptFile(newFile.readBytes(), newFile.path)
         file.delete()
 
         newFile.renameTo(
