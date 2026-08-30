@@ -28,14 +28,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -153,9 +150,7 @@ private fun Content(
     onWriteSystemFont: (value: Boolean) -> Unit,
     onPort: () -> Unit
 ) {
-    val resc = LocalResources.current
     val context = LocalContext.current
-    val buttonText = remember { mutableStateOf(resc.getString(R.string.show)) }
     val count = if (password.value.isNotBlank()) 7 else 6
 
     when {
@@ -202,7 +197,6 @@ private fun Content(
                 onSuccess = {
                     uiState.showEncryptionKeys = true
                     uiState.showConfirmPassswordDialog = false
-                    buttonText.value = resc.getString(R.string.hide)
                 },
                 password = password.value
             )
@@ -300,7 +294,6 @@ private fun Content(
                     when (uiState.showEncryptionKeys) {
                         true -> {
                             uiState.showEncryptionKeys = false
-                            buttonText.value = resc.getString(R.string.show)
                         }
 
                         false -> {
@@ -308,7 +301,6 @@ private fun Content(
                                 uiState.showConfirmPassswordDialog = true
                             } else {
                                 uiState.showEncryptionKeys = true
-                                buttonText.value = resc.getString(R.string.hide)
                             }
                         }
                     }
