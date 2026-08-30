@@ -1,6 +1,7 @@
 package com.omaawr.tuisku.di
 
 import com.omaawr.tuisku.viewmodels.HomeViewModel
+import com.omaawr.tuisku.viewmodels.PortViewModel
 import com.omaawr.tuisku.viewmodels.SettingsViewModel
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -10,4 +11,5 @@ val viewModelsModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::SettingsViewModel)
     viewModelOf(::TextEditorViewModel)
+    viewModelOf(::PortViewModel)
 }

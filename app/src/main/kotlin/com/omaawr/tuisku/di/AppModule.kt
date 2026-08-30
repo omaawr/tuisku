@@ -1,6 +1,7 @@
 package com.omaawr.tuisku.di
 
 import com.omaawr.tuisku.managers.EncryptionManager
+import com.omaawr.tuisku.managers.PortManager
 import com.omaawr.tuisku.settings.Preferences
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -18,6 +19,13 @@ val appModule = module {
         EncryptionManager(
             get(),
             androidContext()
+        )
+    }
+
+    single<PortManager> {
+        PortManager(
+            get(),
+            get()
         )
     }
 }

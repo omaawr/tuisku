@@ -82,7 +82,8 @@ fun Home(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
 
-    val filesWithUnencryptedFilename = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+    val filesWithUnencryptedFilename =
+        ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
     var files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
@@ -106,7 +107,8 @@ fun Home(
     if (filesWithUnencryptedFilename.isNotEmpty()) {
         LaunchedEffect(Unit) {
             filesWithUnencryptedFilename.forEach { file ->
-                val encryptedFilename = encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
+                val encryptedFilename =
+                    encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
 
                 File(ctx.filesDir, "${file.nameWithoutExtension}.txt").renameTo(
                     File(ctx.filesDir, "$encryptedFilename.encrypted-note")

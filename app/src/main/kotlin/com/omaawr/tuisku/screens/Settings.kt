@@ -1,15 +1,20 @@
 package com.omaawr.tuisku.screens
 
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +42,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.omaawr.tuisku.BuildConfig
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ChangePasswordDialog
 import com.omaawr.tuisku.components.PasswordDialog
@@ -52,7 +59,8 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onPort: () -> Unit
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
     val uiState = viewModel.uiState
@@ -93,10 +101,19 @@ fun Settings(
             )
         }
     ) { innerPadding ->
+
         Content(
             modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current)
+                )
+                .padding(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             encryptionKey = encryptionKey,
             useSystemFont = useSystemFont,
@@ -115,7 +132,8 @@ fun Settings(
             },
             onWriteSystemFont = {
                 viewModel.writeUseSystemFont(it)
-            }
+            },
+            onPort = onPort
         )
     }
 }
@@ -132,11 +150,13 @@ private fun Content(
     onWritePassword: (value: String) -> Unit,
     onWriteShowNotesNames: (value: Boolean) -> Unit,
     onWriteDisableScreenshots: (value: Boolean) -> Unit,
-    onWriteSystemFont: (value: Boolean) -> Unit
+    onWriteSystemFont: (value: Boolean) -> Unit,
+    onPort: () -> Unit
 ) {
     val resc = LocalResources.current
     val context = LocalContext.current
     val buttonText = remember { mutableStateOf(resc.getString(R.string.show)) }
+    val count = if (password.value.isNotBlank()) 7 else 6
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -200,12 +220,25 @@ private fun Content(
                 password = password.value
             )
         }
+
+        uiState.showConfirmPasswordDialogForPort -> {
+            PasswordDialog(
+                onDismissRequest = {
+                    uiState.showConfirmPasswordDialogForPort = false
+                },
+                onSuccess = {
+                    onPort()
+                    uiState.showConfirmPasswordDialogForPort = false
+                },
+                password = password.value
+            )
+        }
     }
 
     LazyColumn(
         modifier = modifier
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         item {
             SettingsItem(
@@ -217,7 +250,9 @@ private fun Content(
                             onWriteDisableScreenshots(it)
                         },
                     )
-                }
+                },
+                index = 0,
+                count = count
             )
         }
 
@@ -231,7 +266,9 @@ private fun Content(
                             onWriteSystemFont(it)
                         },
                     )
-                }
+                },
+                index = 1,
+                count = count
             )
         }
 
@@ -250,51 +287,45 @@ private fun Content(
                             }
                         },
                     )
-                }
+                },
+                index = 2,
+                count = count
             )
         }
 
         item {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_encryption_keys)) },
-                trailing = {
-                    Button(
-                        onClick = {
-                            when (uiState.showEncryptionKeys) {
-                                true -> {
-                                    uiState.showEncryptionKeys = false
-                                    buttonText.value = resc.getString(R.string.show)
-                                }
+                onClick = {
+                    when (uiState.showEncryptionKeys) {
+                        true -> {
+                            uiState.showEncryptionKeys = false
+                            buttonText.value = resc.getString(R.string.show)
+                        }
 
-                                false -> {
-                                    if (password.value.isNotBlank()) {
-                                        uiState.showConfirmPassswordDialog = true
-                                    } else {
-                                        uiState.showEncryptionKeys = true
-                                        buttonText.value = resc.getString(R.string.hide)
-                                    }
-                                }
+                        false -> {
+                            if (password.value.isNotBlank()) {
+                                uiState.showConfirmPassswordDialog = true
+                            } else {
+                                uiState.showEncryptionKeys = true
+                                buttonText.value = resc.getString(R.string.hide)
                             }
                         }
-                    ) {
-                        Text(buttonText.value)
                     }
-                }
+                },
+                index = 3,
+                count = count
             )
         }
 
         item {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_set_password)) },
-                trailing = {
-                    Button(
-                        onClick = {
-                            uiState.showChangePasswordDialog = true
-                        }
-                    ) {
-                        Text(stringResource(R.string.settings_pref_set_password_button))
-                    }
-                }
+                onClick = {
+                    uiState.showChangePasswordDialog = true
+                },
+                index = 4,
+                count = count
             )
         }
 
@@ -302,22 +333,50 @@ private fun Content(
             item {
                 SettingsItem(
                     text = { Text(stringResource(R.string.settings_pref_remove_password)) },
-                    trailing = {
-                        Button(
-                            onClick = {
-                                uiState.showRemovePasswordDialog = true
-                            }
-                        ) {
-                            Text(stringResource(R.string.settings_pref_remove_password_button))
-                        }
-                    }
+                    onClick = {
+                        uiState.showRemovePasswordDialog = true
+                    },
+                    index = 5,
+                    count = count
                 )
             }
         }
 
 
+        item {
+            SettingsItem(
+                text = { Text(stringResource(R.string.import_export_notes)) },
+                onClick = {
+                    if (password.value.isNotEmpty()) uiState.showConfirmPasswordDialogForPort = false else onPort()
+                },
+                index = if (password.value.isNotEmpty()) 6 else 5,
+                count = count
+            )
+        }
+
+        item {
+            Spacer(Modifier.height(8.dp))
+        }
+
+        item {
+            Column {
+                Text(
+                    text = stringResource(
+                        R.string.build_info,
+                        BuildConfig.VERSION_NAME,
+                        BuildConfig.VERSION_CODE,
+                        Build.VERSION.SDK_INT
+                    ),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
         if (uiState.showEncryptionKeys) {
             item {
+                Spacer(Modifier.height(8.dp))
+
                 Surface(
                     modifier = Modifier
                         .clip(

@@ -1,17 +1,10 @@
 package com.omaawr.tuisku.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 /**
  * Settings item
@@ -25,30 +18,25 @@ fun SettingsItem(
     modifier: Modifier = Modifier,
     text: @Composable () -> Unit,
     trailing: @Composable (() -> Unit) = { },
+    index: Int,
+    count: Int,
+    onClick: () -> Unit = {}
 ) {
-    Row(
-        modifier = modifier
-            .heightIn(min = 64.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.weight(2f, true)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                ProvideTextStyle(MaterialTheme.typography.titleMedium) {
-                    text()
-                }
-            }
+    val listItemColors = ListItemDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        trailingContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    ListItem(
+        onClick = onClick,
+        colors = listItemColors,
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
+            text()
+        },
+        trailingContent = {
+            trailing()
         }
-
-        Spacer(Modifier.weight(0.05f, true))
-
-        trailing()
-    }
+    )
 }

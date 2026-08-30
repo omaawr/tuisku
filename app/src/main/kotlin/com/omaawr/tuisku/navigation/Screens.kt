@@ -12,6 +12,9 @@ sealed class Screen : NavKey {
     data object Settings : NavKey
 
     @Serializable
+    data object Port : NavKey
+
+    @Serializable
     data class TextEditor(val fileContents: ByteArray, val filePath: String) : NavKey {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

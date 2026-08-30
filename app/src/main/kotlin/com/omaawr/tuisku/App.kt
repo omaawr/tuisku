@@ -17,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.navigation.Screen
 import com.omaawr.tuisku.screens.Home
+import com.omaawr.tuisku.screens.Port
 import com.omaawr.tuisku.screens.Settings
 import com.omaawr.tuisku.screens.TextEditor
 import com.omaawr.tuisku.settings.Preferences
@@ -64,9 +65,16 @@ fun App() {
             )
         }
 
+        entry<Screen.Port> {
+            Port(
+                onBack = onBack
+            )
+        }
+
         entry<Screen.Settings> {
             Settings(
-                onBack = onBack
+                onBack = onBack,
+                onPort = { backStack.add(Screen.Port) }
             )
         }
 
