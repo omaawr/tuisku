@@ -98,7 +98,6 @@ fun Settings(
             )
         }
     ) { innerPadding ->
-
         Content(
             modifier = Modifier
                 .padding(
@@ -152,6 +151,7 @@ private fun Content(
 ) {
     val context = LocalContext.current
     val count = if (password.value.isNotBlank()) 7 else 6
+    val notesAreEmpty = context.filesDir.listFiles()!!.none { it.name.contains(".encrypted-note") }
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -342,7 +342,8 @@ private fun Content(
                     if (password.value.isNotEmpty()) uiState.showConfirmPasswordDialogForPort = false else onPort()
                 },
                 index = if (password.value.isNotEmpty()) 6 else 5,
-                count = count
+                count = count,
+                enabled = !notesAreEmpty
             )
         }
 

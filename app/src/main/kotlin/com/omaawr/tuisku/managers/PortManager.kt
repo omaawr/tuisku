@@ -112,11 +112,11 @@ class PortManager(
 
                     val fos = FileOutputStream(outputFile)
                     zis.copyTo(fos)
+                    fos.close()
 
                     encryptionManager.encryptFile(outputFile.readBytes(), outputFile.path)
                     encryptionManager.renameFile(outputFile.nameWithoutExtension, outputFile)
 
-                    fos.close()
                     zis.closeEntry()
 
                     entry = zis.nextEntry
@@ -124,5 +124,7 @@ class PortManager(
                 zis.close()
             }
         }
+
+        Toast.makeText(ctx, ctx.getString(R.string.notes_imported), Toast.LENGTH_SHORT).show()
     }
 }

@@ -17,10 +17,12 @@ fun SettingsItem(
     trailing: @Composable (() -> Unit) = { },
     index: Int,
     count: Int,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     val listItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         contentColor = MaterialTheme.colorScheme.onSurface,
         trailingContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -34,6 +36,7 @@ fun SettingsItem(
         },
         trailingContent = {
             trailing()
-        }
+        },
+        enabled = enabled
     )
 }
