@@ -54,8 +54,15 @@ fun NewFileDialog(
             TextButton(
                 onClick = {
                     when {
-                        textFieldState.text.isBlank() || textFieldState.text.contains("/") -> {
+                        textFieldState.text.contains("/") -> {
                             error.value = true
+                        }
+
+                        textFieldState.text.isBlank() -> {
+                            scope.launch {
+                                encryptionManager.newFile("<untitled>")
+                                onDismissRequest()
+                            }
                         }
 
                         else -> {

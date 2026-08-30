@@ -30,6 +30,10 @@ fun Note(
     filename: String,
     date: String
 ) {
+    var noteFilename = filename
+
+    if (filename == "<untitled>") noteFilename = ""
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,7 +51,7 @@ fun Note(
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                filename,
+                noteFilename,
                 fontSize = 18.sp
             )
 
