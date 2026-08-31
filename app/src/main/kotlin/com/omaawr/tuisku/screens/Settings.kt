@@ -339,7 +339,7 @@ private fun Content(
             SettingsItem(
                 text = { Text(stringResource(R.string.import_export_notes)) },
                 onClick = {
-                    if (password.value.isNotEmpty()) uiState.showConfirmPasswordDialogForPort = false else onPort()
+                    if (password.value.isNotEmpty()) uiState.showConfirmPasswordDialogForPort = true else onPort()
                 },
                 index = if (password.value.isNotEmpty()) 6 else 5,
                 count = count,
