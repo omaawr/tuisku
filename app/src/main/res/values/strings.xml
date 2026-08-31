@@ -41,11 +41,11 @@
     <string name="notice_dialog_desc">With 1.1.1. Your notes are made a little bit more secure with their filenames encrypted internally, However, as a result of this change, you may not see your notes until you restart the app or going to the Settings page and then back to the Home page.</string>
     <string name="show_notes_names">Show notes names on the Home page</string>
     <string name="note_renamed_successfully">Note renamed successfully</string>
-    <string name="another_notice_dialog_title">"A critical security flaw has been fixed and your notes nonces has been regenerated"</string>
-    <string name="another_notice_dialog_desc">"Your notes are migrated to the new key under a new filename which is typically "new-note-number", so you may have to rename the note. The contents of the note are still safe and exactly the same as beforehand, sorry about that security flaw :("</string>
+    <string name="another_notice_dialog_title">A critical security flaw has been fixed and your notes nonces has been regenerated</string>
+    <string name="another_notice_dialog_desc">Your notes are migrated to a new nonce generation under a new filename which is typically "new-note-number", so you may have to rename the note. The contents of the note are still safe and exactly the same as beforehand, sorry about that security flaw :(</string>
     <string name="filename_error">&lt;an error occurred while rendering this filename, this may be a bomb which crashes the app if tapped on&gt;</string>
     <string name="note_last_modified_on_date">Last modified on %1$s</string>
-    <string name="build_info">"Tuisku version %1$s (%2$s), Running on Android SDK version %3$s, A silly notes app keeping your notes encrypted (internally) with ChaCha20"</string>
+    <string name="build_info">Tuisku version %1$s (%2$s), running on Android SDK version %3$s, A silly notes app keeping your notes encrypted (internally) with ChaCha20</string>
 
     <string name="import_export_notes">Import/export notes</string>
     <string name="import_notes">Import notes (encrypted)</string>

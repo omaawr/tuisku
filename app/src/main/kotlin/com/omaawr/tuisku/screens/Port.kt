@@ -134,6 +134,7 @@ private fun Content(
 
     val listItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         contentColor = MaterialTheme.colorScheme.onSurface,
         trailingContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )

@@ -5,12 +5,12 @@ kotlinxSerializationJson = "1.11.0"
 activityCompose = "1.13.0"
 kotlin = "2.4.10"
 composeBom = "2026.08.00"
-nav3Core = "1.1.6"
-lifecycleViewmodelNav3 = "2.12.0-alpha01"
+nav3Core = "1.1.7"
+lifecycleViewmodelNav3 = "2.12.0-alpha02"
 kotlinSerialization = "2.4.10"
 kotlinxSerializationCore = "1.11.0"
 koin-bom = "4.2.2"
-material3 = "1.5.0-alpha26"
+material3 = "1.5.0-alpha27"
 
 [libraries]
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
