@@ -151,7 +151,6 @@ private fun Content(
 ) {
     val context = LocalContext.current
     val count = if (password.value.isNotBlank()) 7 else 6
-    val notesAreEmpty = context.filesDir.listFiles()!!.none { it.name.contains(".encrypted-note") }
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -343,7 +342,6 @@ private fun Content(
                 },
                 index = if (password.value.isNotEmpty()) 6 else 5,
                 count = count,
-                enabled = !notesAreEmpty
             )
         }
 

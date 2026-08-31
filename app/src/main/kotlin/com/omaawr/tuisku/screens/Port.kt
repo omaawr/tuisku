@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -128,6 +129,9 @@ private fun Content(
     onImportUnencrypted: () -> Unit,
     onExportUnencrypted: () -> Unit
 ) {
+    val context = LocalContext.current
+    val notesAreEmpty = context.filesDir.listFiles()!!.none { it.name.contains(".encrypted-note") }
+
     val listItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -161,6 +165,7 @@ private fun Content(
                 content = {
                     Text(stringResource(R.string.export_notes))
                 },
+                enabled = !notesAreEmpty
             )
         }
 
@@ -187,6 +192,7 @@ private fun Content(
                 content = {
                     Text(stringResource(R.string.export_notes_unencrypted))
                 },
+                enabled = !notesAreEmpty
             )
         }
 
