@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.nativeClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -55,6 +56,7 @@ private fun Content(
 ) {
     val clipboard = LocalClipboard.current.nativeClipboardManager
     val ctx = LocalContext.current
+    val res = LocalResources.current
 
     LazyColumn(
         modifier = modifier
@@ -77,10 +79,10 @@ private fun Content(
                     ),
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 onClick = {
-                    val clipData = ClipData.newPlainText("Tuisku crash log", exception)
+                    val clipData = ClipData.newPlainText(res.getString(R.string.tuisku_crash_log), exception)
                     clipboard.setPrimaryClip(clipData)
 
-                    Toast.makeText(ctx, "Copied to clipboard!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, res.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
                 }
             ) {
                 SelectionContainer(

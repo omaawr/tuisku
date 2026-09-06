@@ -55,4 +55,7 @@
     <string name="notes_exported">Notes exported</string>
     <string name="notes_imported">Notes imported</string>
     <string name="import_export_disclaimer">Exporting/importing notes will work properly if the notes have the same encryption key as Tuisku uses, if not, then the notes will fail to decrypt.</string>
+
+    <string name="copied_to_clipboard">Copied to clipboard!</string>
+    <string name="tuisku_crash_log">Tuisku crash log</string>
 </resources>
