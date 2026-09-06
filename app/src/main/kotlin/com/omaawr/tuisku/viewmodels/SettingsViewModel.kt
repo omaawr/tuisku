@@ -38,8 +38,8 @@ private class MutableSettingsUiState : SettingsUiState {
 class SettingsViewModel(
     private val prefs: Preferences
 ) : ViewModel() {
-    private val _uiState = MutableSettingsUiState()
-    val uiState: SettingsUiState = _uiState
+    val uiState: SettingsUiState
+        field = MutableSettingsUiState()
 
     val encryptionKey = prefs.getEncryptionKey()
     val useSystemFont = prefs.getUseSystemFont()

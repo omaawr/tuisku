@@ -55,8 +55,8 @@ class SelectedFileState(
 class HomeViewModel(
     private val prefs: Preferences
 ) : ViewModel() {
-    private val _uiState = MutableHomeUiState()
-    val uiState: HomeUiState = _uiState
+    val uiState: HomeUiState
+        field = MutableHomeUiState()
 
     val notePassword = prefs.getPassword()
     val firstLaunch = prefs.getFirstLaunch()

@@ -23,8 +23,8 @@ private class MutableTextEditorUiState : TextEditorUiState {
 class TextEditorViewModel(
     private val encryptionManager: EncryptionManager
 ) : ViewModel() {
-    private val _uiState = MutableTextEditorUiState()
-    val uiState: TextEditorUiState = _uiState
+    val uiState: TextEditorUiState
+        field = MutableTextEditorUiState()
 
     fun encrypt(data: String, filePath: String) {
         viewModelScope.launch {
