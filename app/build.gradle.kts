@@ -16,8 +16,8 @@ android {
         applicationId = "com.omaawr.tuisku"
         minSdk = 28
         targetSdk = 37
-        versionCode = 21
-        versionName = "1.3.0"
+        versionCode = 22
+        versionName = "1.3.0-1"
     }
 
     buildFeatures {
@@ -46,9 +46,6 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(platform(libs.koin.bom))
-
     // Compose
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
