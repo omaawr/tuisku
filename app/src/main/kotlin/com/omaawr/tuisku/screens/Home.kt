@@ -115,7 +115,7 @@ fun Home(
             activity = activity,
             onSuccess = { navigateToTextEditor = true },
             onError = {
-                uiState.showPasswordDialog = true
+                if (password.value.isNotBlank()) uiState.showPasswordDialog = true
             }
         )
     )
