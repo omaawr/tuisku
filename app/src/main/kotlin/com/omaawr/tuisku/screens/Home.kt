@@ -2,7 +2,6 @@ package com.omaawr.tuisku.screens
 
 import android.os.Build
 import androidx.activity.compose.LocalActivity
-import androidx.biometric.AuthenticationRequest
 import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
 import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.layout.Arrangement
@@ -125,8 +124,7 @@ fun Home(
             useBiometrics -> {
                 launcher.launch(
                     biometricRequest(
-                        title = resc.getString(R.string.biometric_title),
-                        authFallbacks = arrayOf(AuthenticationRequest.Biometric.Fallback.DeviceCredential)
+                        title = resc.getString(R.string.biometric_title)
                     ) {
                         setSubtitle(resc.getString(R.string.unlock_decrypt_note))
                     }

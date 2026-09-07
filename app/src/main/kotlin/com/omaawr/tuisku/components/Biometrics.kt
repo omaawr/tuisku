@@ -3,7 +3,6 @@ package com.omaawr.tuisku.components
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.provider.Settings
 import android.util.Log
 import androidx.biometric.AuthenticationResult
@@ -43,7 +42,7 @@ fun biometricCallback(
                     val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
                         putExtra(
                             Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                            BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                            BIOMETRIC_STRONG
                         )
                     }
 
