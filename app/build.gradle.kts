@@ -71,4 +71,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.koin.androidx.compose)
+
+    // Biometrics
+    implementation(libs.androidx.biometrics)
 }

@@ -122,4 +122,14 @@ class Preferences(
             settings.copy(showNotesNames = value)
         }
     }
+
+    fun getUseBiometrics(): Flow<Boolean> = context.dataStore.data.map { settings ->
+        settings.useBiometrics
+    }
+
+    suspend fun writeUseBiometrics(value: Boolean) {
+        context.dataStore.updateData { settings ->
+            settings.copy(useBiometrics = value)
+        }
+    }
 }

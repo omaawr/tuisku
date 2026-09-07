@@ -28,6 +28,7 @@
     <string name="settings_pref_set_password_button">Set/change</string>
     <string name="settings_pref_remove_password">Remove password for notes</string>
     <string name="settings_pref_remove_password_button">Remove</string>
+    <string name="settings_pref_use_biometrics">Use biometrics (password will be used as fallback if set)</string>
 
     <string name="enter_password">Enter password</string>
     <string name="confirm_password">Confirm password</string>
@@ -58,4 +59,7 @@
 
     <string name="copied_to_clipboard">Copied to clipboard!</string>
     <string name="tuisku_crash_log">Tuisku crash log</string>
+
+    <string name="biometric_title">Authenticate for the silly notes app Tuisku</string>
+    <string name="unlock_decrypt_note">Unlock/decrypt note</string>
 </resources>

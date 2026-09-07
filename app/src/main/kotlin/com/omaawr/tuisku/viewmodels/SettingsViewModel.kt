@@ -15,6 +15,7 @@ interface SettingsUiState {
     var showConfirmPassswordDialog: Boolean
     var showConfirmPassswordDialogForNotesNames: Boolean
     var showConfirmPasswordDialogForPort: Boolean
+    var showConfirmPasswordDialogForBiometrics: Boolean
     fun clear()
 }
 
@@ -25,6 +26,7 @@ private class MutableSettingsUiState : SettingsUiState {
     override var showConfirmPassswordDialog: Boolean by mutableStateOf(false)
     override var showConfirmPassswordDialogForNotesNames: Boolean by mutableStateOf(false)
     override var showConfirmPasswordDialogForPort: Boolean by mutableStateOf(false)
+    override var showConfirmPasswordDialogForBiometrics: Boolean by mutableStateOf(false)
 
     override fun clear() {
         showEncryptionKeys = false
@@ -32,6 +34,7 @@ private class MutableSettingsUiState : SettingsUiState {
         showRemovePasswordDialog = false
         showChangePasswordDialog = false
         showConfirmPassswordDialogForNotesNames = false
+        showConfirmPasswordDialogForBiometrics = false
     }
 }
 
@@ -46,6 +49,7 @@ class SettingsViewModel(
     val disableScreenshots = prefs.getDisableScreenshots()
     val showNotesNames = prefs.getShowNotesNames()
     val password = prefs.getPassword()
+    val useBiometrics = prefs.getUseBiometrics()
 
     fun writeUseSystemFont(value: Boolean) {
         viewModelScope.launch {
@@ -68,6 +72,12 @@ class SettingsViewModel(
     fun writePassword(value: String) {
         viewModelScope.launch {
             prefs.writePassword(value)
+        }
+    }
+
+    fun writeUseBiometrics(value: Boolean) {
+        viewModelScope.launch {
+            prefs.writeUseBiometrics(value)
         }
     }
 }

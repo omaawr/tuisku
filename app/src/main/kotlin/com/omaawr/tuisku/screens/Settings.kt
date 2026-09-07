@@ -68,6 +68,7 @@ fun Settings(
         viewModel.disableScreenshots.collectAsStateWithLifecycle(initialValue = false)
     val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = false)
+    val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -116,6 +117,7 @@ fun Settings(
             disableScreenshots = disableScreenshots,
             password = password,
             showNotesNames = showNotesNames,
+            useBiometrics = useBiometrics,
             uiState = uiState,
             onWritePassword = {
                 viewModel.writePassword(it)
@@ -128,6 +130,9 @@ fun Settings(
             },
             onWriteSystemFont = {
                 viewModel.writeUseSystemFont(it)
+            },
+            onWriteUseBiometrics = {
+                viewModel.writeUseBiometrics(it)
             },
             onPort = onPort
         )
@@ -142,15 +147,17 @@ private fun Content(
     disableScreenshots: State<Boolean>,
     password: State<String>,
     showNotesNames: State<Boolean>,
+    useBiometrics: State<Boolean>,
     uiState: SettingsUiState,
     onWritePassword: (value: String) -> Unit,
     onWriteShowNotesNames: (value: Boolean) -> Unit,
     onWriteDisableScreenshots: (value: Boolean) -> Unit,
     onWriteSystemFont: (value: Boolean) -> Unit,
+    onWriteUseBiometrics: (value: Boolean) -> Unit,
     onPort: () -> Unit
 ) {
     val context = LocalContext.current
-    val count = if (password.value.isNotBlank()) 7 else 6
+    val count = if (password.value.isNotBlank()) 8 else 7
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -226,6 +233,19 @@ private fun Content(
                 password = password.value
             )
         }
+
+        uiState.showConfirmPasswordDialogForBiometrics -> {
+            PasswordDialog(
+                onDismissRequest = {
+                    uiState.showConfirmPasswordDialogForBiometrics = false
+                },
+                onSuccess = {
+                    onWriteUseBiometrics(true)
+                    uiState.showConfirmPasswordDialogForBiometrics = false
+                },
+                password = password.value
+            )
+        }
     }
 
     LazyColumn(
@@ -288,6 +308,27 @@ private fun Content(
 
         item {
             SettingsItem(
+                text = { Text(stringResource(R.string.settings_pref_use_biometrics)) },
+                trailing = {
+                    Switch(
+                        checked = useBiometrics.value,
+                        onCheckedChange = {
+                            if (password.value.isNotBlank() && !useBiometrics.value) {
+                                uiState.showConfirmPasswordDialogForBiometrics = true
+                            } else {
+                                onWriteUseBiometrics(it)
+                            }
+                        },
+                    )
+                },
+                enabled = Build.VERSION.SDK_INT >= 30,
+                index = 3,
+                count = count
+            )
+        }
+
+        item {
+            SettingsItem(
                 text = { Text(stringResource(R.string.settings_encryption_keys)) },
                 onClick = {
                     when (uiState.showEncryptionKeys) {
@@ -304,7 +345,7 @@ private fun Content(
                         }
                     }
                 },
-                index = 3,
+                index = 4,
                 count = count
             )
         }
@@ -315,7 +356,7 @@ private fun Content(
                 onClick = {
                     uiState.showChangePasswordDialog = true
                 },
-                index = 4,
+                index = 5,
                 count = count
             )
         }
@@ -327,7 +368,7 @@ private fun Content(
                     onClick = {
                         uiState.showRemovePasswordDialog = true
                     },
-                    index = 5,
+                    index = 6,
                     count = count
                 )
             }
@@ -340,7 +381,7 @@ private fun Content(
                 onClick = {
                     if (password.value.isNotEmpty()) uiState.showConfirmPasswordDialogForPort = true else onPort()
                 },
-                index = if (password.value.isNotEmpty()) 6 else 5,
+                index = if (password.value.isNotEmpty()) 7 else 6,
                 count = count,
             )
         }

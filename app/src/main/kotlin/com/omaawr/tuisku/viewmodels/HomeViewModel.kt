@@ -62,6 +62,7 @@ class HomeViewModel(
     val firstLaunch = prefs.getFirstLaunch()
     val showNotesNames = prefs.getShowNotesNames()
     val ivKey = prefs.getIVKey()
+    val useBiometrics = prefs.getUseBiometrics()
 
     fun writeFirstLaunch(value: Boolean) {
         viewModelScope.launch {

@@ -1,5 +1,10 @@
 package com.omaawr.tuisku.screens
 
+import android.os.Build
+import androidx.activity.compose.LocalActivity
+import androidx.biometric.AuthenticationRequest
+import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
+import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -44,6 +49,7 @@ import com.omaawr.tuisku.components.NoteBottomSheet
 import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.RenameFileDialog
+import com.omaawr.tuisku.components.biometricCallback
 import com.omaawr.tuisku.managers.EncryptionManager
 import com.omaawr.tuisku.viewmodels.HomeViewModel
 import com.omaawr.tuisku.viewmodels.SelectedFileState
@@ -79,6 +85,7 @@ fun Home(
     val ctx = LocalContext.current
     val locale = LocalLocale.current.platformLocale
     val resc = LocalResources.current
+    val activity = LocalActivity.current!!
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
 
@@ -89,6 +96,7 @@ fun Home(
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = true)
+    val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false).value && Build.VERSION.SDK_INT >= 30
 
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf(SelectedFileState()) }
@@ -99,6 +107,39 @@ fun Home(
         // causing a NullPointerException on them since home page and their state is cleared
         onDispose {
             uiState.clear()
+        }
+    }
+
+    val launcher = rememberAuthenticationLauncher(
+        resultCallback = biometricCallback(
+            activity = activity,
+            onSuccess = { navigateToTextEditor = true },
+            onError = {
+                uiState.showPasswordDialog = true
+            }
+        )
+    )
+
+    val noteOnClick = {
+        when {
+            useBiometrics -> {
+                launcher.launch(
+                    biometricRequest(
+                        title = resc.getString(R.string.biometric_title),
+                        authFallbacks = arrayOf(AuthenticationRequest.Biometric.Fallback.DeviceCredential)
+                    ) {
+                        setSubtitle(resc.getString(R.string.unlock_decrypt_note))
+                    }
+                )
+            }
+
+            !useBiometrics && password.value.isNotBlank() -> {
+                uiState.showPasswordDialog = true
+            }
+
+            !useBiometrics && password.value.isBlank() -> {
+                navigateToTextEditor = true
+            }
         }
     }
 
@@ -332,8 +373,7 @@ fun Home(
                                     file.readBytes()
                                 )
 
-                                if (password.value.isNotBlank()) uiState.showPasswordDialog =
-                                    true else navigateToTextEditor = true
+                                noteOnClick()
                             },
                             onLongClick = {
                                 selectedFile = SelectedFileState(
@@ -342,8 +382,7 @@ fun Home(
                                     file.readBytes()
                                 )
 
-                                if (password.value.isNotBlank()) uiState.showPasswordForBottomSheet =
-                                    true else uiState.showBottomSheet = true
+                                noteOnClick()
                             },
                             filename = decodedFilename.value,
                             date = date

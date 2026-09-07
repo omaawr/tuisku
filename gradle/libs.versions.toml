@@ -9,8 +9,10 @@ navigation3 = "1.1.7"
 navigation3-viewmodels = "2.12.0-alpha02"
 kotlinx-serialization = "1.11.0"
 material3 = "1.5.0-alpha27"
+biometrics = "1.4.0-alpha07"
 
 [libraries]
+androidx-biometrics = { module = "androidx.biometric:biometric-compose", version.ref = "biometrics" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-datastore-tink = { module = "androidx.datastore:datastore-tink", version.ref = "datastore" }
