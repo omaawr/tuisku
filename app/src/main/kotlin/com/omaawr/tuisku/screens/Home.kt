@@ -62,6 +62,7 @@ import kotlin.io.encoding.Base64
 
 // home page doesnt use the stateless Content() function format because notes list won't reload properly when doing that for some reason(?)
 // its fine though
+// disclaimer: this code is an absolute mess
 
 /**
  * Home page, usually containing the notes to navigate to
@@ -100,6 +101,7 @@ fun Home(
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf(SelectedFileState()) }
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
+    var openingBottomSheet by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         // somehow theres a ui bug where some dialogs and bottom sheet stay even after navigating to another page
@@ -112,9 +114,22 @@ fun Home(
     val launcher = rememberAuthenticationLauncher(
         resultCallback = biometricCallback(
             activity = activity,
-            onSuccess = { navigateToTextEditor = true },
+            onSuccess = {
+                when {
+                    openingBottomSheet -> uiState.showBottomSheet = true
+                    !openingBottomSheet -> navigateToTextEditor = true
+                }
+            },
             onError = {
-                if (password.value.isNotBlank()) uiState.showPasswordDialog = true
+                when {
+                    openingBottomSheet && password.value.isNotBlank() -> {
+                        uiState.showPasswordForBottomSheet = true
+                    }
+
+                    !openingBottomSheet && password.value.isNotBlank() -> {
+                        uiState.showPasswordDialog = true
+                    }
+                }
             }
         )
     )
@@ -132,52 +147,54 @@ fun Home(
             }
 
             !useBiometrics && password.value.isNotBlank() -> {
-                uiState.showPasswordDialog = true
+                if (openingBottomSheet) uiState.showPasswordForBottomSheet = true else uiState.showPasswordDialog = true
             }
 
             !useBiometrics && password.value.isBlank() -> {
-                navigateToTextEditor = true
+                if (openingBottomSheet) uiState.showBottomSheet = true else navigateToTextEditor = true
             }
         }
     }
 
     uiState.showFirstLaunchDialog = firstLaunch.value
 
-    if (filesWithUnencryptedFilename.isNotEmpty()) {
-        LaunchedEffect(Unit) {
-            filesWithUnencryptedFilename.forEach { file ->
-                val encryptedFilename =
-                    encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
+    when {
+        filesWithUnencryptedFilename.isNotEmpty() -> {
+            LaunchedEffect(Unit) {
+                filesWithUnencryptedFilename.forEach { file ->
+                    val encryptedFilename =
+                        encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
 
-                File(ctx.filesDir, "${file.nameWithoutExtension}.txt").renameTo(
-                    File(ctx.filesDir, "$encryptedFilename.encrypted-note")
-                )
-            }
-        }
-
-        uiState.showNoticeDialog = true
-    }
-
-    if (files.isEmpty() && ivKey.value.isNotEmpty()) {
-        viewModel.writeIvKey("")
-    }
-
-    if (files.isNotEmpty() && ivKey.value.isNotEmpty()) {
-        LaunchedEffect(Unit) {
-            withContext(Dispatchers.IO) {
-                files.forEachIndexed { index, file ->
-                    encryptionManager.migrateFile(
-                        index,
-                        file
+                    File(ctx.filesDir, "${file.nameWithoutExtension}.txt").renameTo(
+                        File(ctx.filesDir, "$encryptedFilename.encrypted-note")
                     )
                 }
-
-                files = ctx.filesDir.listFiles()?.filter { it.name.contains(".encrypted-note") }
-                    ?: emptyList()
             }
 
-            uiState.showAnotherNoticeDialog = true
+            uiState.showNoticeDialog = true
+        }
+
+        files.isEmpty() && ivKey.value.isNotEmpty() -> {
             viewModel.writeIvKey("")
+        }
+
+        files.isNotEmpty() && ivKey.value.isNotEmpty() -> {
+            LaunchedEffect(Unit) {
+                withContext(Dispatchers.IO) {
+                    files.forEachIndexed { index, file ->
+                        encryptionManager.migrateFile(
+                            index,
+                            file
+                        )
+                    }
+
+                    files = ctx.filesDir.listFiles()?.filter { it.name.contains(".encrypted-note") }
+                        ?: emptyList()
+                }
+
+                uiState.showAnotherNoticeDialog = true
+                viewModel.writeIvKey("")
+            }
         }
     }
 
@@ -371,6 +388,8 @@ fun Home(
                                     file.readBytes()
                                 )
 
+                                openingBottomSheet = false
+
                                 noteOnClick()
                             },
                             onLongClick = {
@@ -379,6 +398,8 @@ fun Home(
                                     file.absolutePath,
                                     file.readBytes()
                                 )
+
+                                openingBottomSheet = true
 
                                 noteOnClick()
                             },
