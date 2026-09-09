@@ -37,25 +37,25 @@ import com.omaawr.tuisku.components.ShareFile
 import com.omaawr.tuisku.viewmodels.TextEditorUiState
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.io.File
 
 /**
  * Text editor page
  *
  * @param modifier - Modifier for the page (usually unused aswell)
- * @param bytes - Content passed on by the Home page to be decrypted
- * @param path - File path to be used to save the encrypted content
+ * @param path - File path used to read decrypted content
  * @param onBack - Upon navigating back (obviously)
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TextEditor(
     modifier: Modifier = Modifier,
-    bytes: ByteArray,
     path: String,
     onBack: () -> Unit
 ) {
     val viewModel: TextEditorViewModel = koinViewModel()
     val uiState = viewModel.uiState
+    val bytes = File(path).readBytes()
     val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
 
     val textFieldState = rememberTextFieldState()

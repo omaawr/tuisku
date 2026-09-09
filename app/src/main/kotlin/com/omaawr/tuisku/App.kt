@@ -60,7 +60,7 @@ fun App() {
         entry<Screen.Home> {
             Home(
                 modifier = Modifier.fillMaxSize(),
-                onTextEditor = { file, path -> backStack.add(Screen.TextEditor(file, path)) },
+                onTextEditor = { path -> backStack.add(Screen.TextEditor(path)) },
                 onSettings = { backStack.add(Screen.Settings) }
             )
         }
@@ -81,7 +81,6 @@ fun App() {
         entry<Screen.TextEditor> { key ->
             TextEditor(
                 modifier = Modifier.fillMaxSize(),
-                bytes = key.fileContents,
                 path = key.filePath,
                 onBack = onBack
             )

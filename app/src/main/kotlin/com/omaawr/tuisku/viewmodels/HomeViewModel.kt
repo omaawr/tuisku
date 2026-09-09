@@ -48,8 +48,7 @@ private class MutableHomeUiState : HomeUiState {
 
 class SelectedFileState(
     var file: File? = null,
-    var path: String? = null,
-    var contents: ByteArray? = null
+    var path: String? = null
 )
 
 class HomeViewModel(

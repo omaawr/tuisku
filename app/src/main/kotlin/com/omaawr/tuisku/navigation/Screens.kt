@@ -15,18 +15,5 @@ sealed class Screen : NavKey {
     data object Port : NavKey
 
     @Serializable
-    data class TextEditor(val fileContents: ByteArray, val filePath: String) : NavKey {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as TextEditor
-
-            return fileContents.contentEquals(other.fileContents)
-        }
-
-        override fun hashCode(): Int {
-            return fileContents.contentHashCode()
-        }
-    }
+    data class TextEditor(val filePath: String) : NavKey
 }

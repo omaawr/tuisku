@@ -73,6 +73,7 @@ fun Settings(
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
     val uiState = viewModel.uiState
+    val context = LocalContext.current
 
     val encryptionKey = viewModel.encryptionKey.collectAsStateWithLifecycle(initialValue = "")
     val useSystemFont = viewModel.useSystemFont.collectAsStateWithLifecycle(initialValue = false)
@@ -83,6 +84,10 @@ fun Settings(
     val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    // sometimes the user can disable using biometrics on apps while its on, causing bugs when its still on but it doesn't actually work
+    // app becomes really buggy if theres no password set, not really being able to respond to anything
+    if (useBiometrics.value && !checkBiometrics(context)) viewModel.writeUseBiometrics(false)
 
     DisposableEffect(Unit) {
         // somehow theres a ui bug where some dialogs stay even after navigating to another page
