@@ -408,7 +408,23 @@ private fun Content(
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_set_password)) },
                 onClick = {
-                    uiState.showChangePasswordDialog = true
+                    when {
+                        useBiometrics.value -> {
+                            onBiometricSuccess = { uiState.showChangePasswordDialog = true }
+
+                            launcher.launch(
+                                biometricRequest(
+                                    title = resources.getString(R.string.biometric_title)
+                                ) {
+                                    setSubtitle(resources.getString(R.string.write_settings_item_pref))
+                                }
+                            )
+                        }
+
+                        !useBiometrics.value -> {
+                            uiState.showChangePasswordDialog = true
+                        }
+                    }
                 },
                 index = 5,
                 count = count

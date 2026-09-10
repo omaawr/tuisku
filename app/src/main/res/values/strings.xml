@@ -63,4 +63,5 @@
     <string name="biometric_title">Authenticate for the silly notes app Tuisku</string>
     <string name="unlock_decrypt_note">Unlock/decrypt note</string>
     <string name="write_settings_item_pref">Write settings item preferrence (or going to import/export, or showing encryption keys)</string>
+    <string name="untitled_note_name">&lt;untitled&gt;</string>
 </resources>

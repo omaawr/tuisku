@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.managers.EncryptionManager
@@ -35,6 +36,7 @@ fun NewFileDialog(
     val scope = rememberCoroutineScope()
     val encryptionManager = koinInject<EncryptionManager>()
     val error = remember { mutableStateOf(false) }
+    val res = LocalResources.current
 
     AlertDialog(
         title = {
@@ -60,7 +62,7 @@ fun NewFileDialog(
 
                         textFieldState.text.isBlank() -> {
                             scope.launch {
-                                encryptionManager.newFile("<untitled>")
+                                encryptionManager.newFile(res.getString(R.string.untitled_note_name))
                                 onDismissRequest()
                             }
                         }

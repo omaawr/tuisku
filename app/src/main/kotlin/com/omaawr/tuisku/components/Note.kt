@@ -30,10 +30,6 @@ fun Note(
     filename: String,
     date: String
 ) {
-    var noteFilename = filename
-
-    if (filename == "<untitled>") noteFilename = ""
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,16 +46,25 @@ fun Note(
         ),
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(
-                noteFilename,
-                fontSize = 18.sp
-            )
+            if (filename != stringResource(R.string.untitled_note_name)) {
+                Text(
+                    text = filename,
+                    fontSize = 18.sp
+                )
+            }
 
             Text(
-                stringResource(
-                    R.string.note_last_modified_on_date,
-                    date
-                ),
+                text = if (filename == stringResource(R.string.untitled_note_name)) {
+                    stringResource(R.string.untitled_note_name) + " - " + stringResource(
+                        R.string.note_last_modified_on_date,
+                        date
+                    )
+                } else {
+                    stringResource(
+                        R.string.note_last_modified_on_date,
+                        date
+                    )
+                },
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
