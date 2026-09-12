@@ -1,6 +1,5 @@
 package com.omaawr.tuisku.screens
 
-import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
 import androidx.biometric.compose.rememberAuthenticationLauncher
@@ -91,7 +90,7 @@ fun Home(
     val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = true)
-    val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false).value && Build.VERSION.SDK_INT >= 30
+    val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false)
 
     DisposableEffect(Unit) {
         // somehow theres a ui bug where some dialogs and bottom sheet stay even after navigating to another page
@@ -204,7 +203,7 @@ private fun Content(
     password: State<String>,
     firstLaunch: State<Boolean>,
     showNotesNames: State<Boolean>,
-    useBiometrics: Boolean,
+    useBiometrics: State<Boolean>,
     onTextEditor: (path: String) -> Unit,
     encryptionManager: EncryptionManager,
     onWriteFirstLaunch: (value: Boolean) -> Unit
@@ -248,7 +247,7 @@ private fun Content(
 
     val noteOnClick = {
         when {
-            useBiometrics -> {
+            useBiometrics.value -> {
                 launcher.launch(
                     biometricRequest(
                         title = resc.getString(R.string.biometric_title)
@@ -258,7 +257,7 @@ private fun Content(
                 )
             }
 
-            !useBiometrics && password.value.isNotBlank() -> {
+            !useBiometrics.value && password.value.isNotBlank() -> {
                 if (openingBottomSheet) {
                     uiState.showPasswordForBottomSheet = true
                 } else {
@@ -266,7 +265,7 @@ private fun Content(
                 }
             }
 
-            !useBiometrics && password.value.isBlank() -> {
+            !useBiometrics.value && password.value.isBlank() -> {
                 if (openingBottomSheet) {
                     uiState.showBottomSheet = true
                 } else {

@@ -366,10 +366,10 @@ private fun Content(
                                 launcher = launcher
                             )
                         },
-                        enabled = Build.VERSION.SDK_INT >= 30 && checkBiometrics(context)
+                        enabled = checkBiometrics(context)
                     )
                 },
-                enabled = Build.VERSION.SDK_INT >= 30 && checkBiometrics(context),
+                enabled = checkBiometrics(context),
                 index = 3,
                 count = count
             )
