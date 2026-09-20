@@ -103,22 +103,27 @@ class PortManager(
 
         scope.launch {
             ZipInputStream(inputStream).use { zis ->
+                val extractionRoot = ctx.filesDir.canonicalFile
+                val rootPath = extractionRoot.path.let {
+                    if (it.endsWith(File.separator)) it else it + File.separator
+                }
                 var entry = zis.nextEntry
 
                 while (entry != null) {
-                    if (entry.isDirectory || !entry.name.contains(".txt")) continue
+                    if (!entry.isDirectory && entry.name.contains(".txt")) {
+                        val outputFile = File(extractionRoot, entry.name).canonicalFile
 
-                    val outputFile = File(ctx.filesDir, entry.name)
+                        if (outputFile.path.startsWith(rootPath)) {
+                            val fos = FileOutputStream(outputFile)
+                            zis.copyTo(fos)
+                            fos.close()
 
-                    val fos = FileOutputStream(outputFile)
-                    zis.copyTo(fos)
-                    fos.close()
-
-                    encryptionManager.encryptFile(outputFile.readBytes(), outputFile.path)
-                    encryptionManager.renameFile(outputFile.nameWithoutExtension, outputFile)
+                            encryptionManager.encryptFile(outputFile.readBytes(), outputFile.path)
+                            encryptionManager.renameFile(outputFile.nameWithoutExtension, outputFile)
+                        }
+                    }
 
                     zis.closeEntry()
-
                     entry = zis.nextEntry
                 }
                 zis.close()
