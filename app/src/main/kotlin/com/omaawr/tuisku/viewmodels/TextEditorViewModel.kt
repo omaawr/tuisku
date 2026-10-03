@@ -6,8 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omaawr.tuisku.managers.EncryptionManager
+import com.omaawr.tuisku.settings.Preferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 interface TextEditorUiState {
@@ -21,10 +23,12 @@ private class MutableTextEditorUiState : TextEditorUiState {
 }
 
 class TextEditorViewModel(
-    private val encryptionManager: EncryptionManager
+    private val encryptionManager: EncryptionManager,
+    prefs: Preferences
 ) : ViewModel() {
     val uiState: TextEditorUiState
         field = MutableTextEditorUiState()
+    val useAutoSave = prefs.getUseAutoSave()
 
     fun encrypt(data: String, filePath: String) {
         viewModelScope.launch {
@@ -34,5 +38,5 @@ class TextEditorViewModel(
 
     fun decrypt(data: ByteArray): Flow<String> = flow {
         emit(encryptionManager.decryptBytes(data))
-    }
+    }.take(1)
 }

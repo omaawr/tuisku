@@ -21,6 +21,7 @@
     <string name="hide">Hide</string>
     <string name="okay">Okay</string>
 
+    <string name="settings_pref_use_auto_save">Use auto-save on notes</string>
     <string name="settings_pref_screenshots">Disable screenshots</string>
     <string name="settings_pref_font">Use system font instead of Google Sans</string>
     <string name="settings_encryption_keys">Show encryption keys (not really recommended)</string>

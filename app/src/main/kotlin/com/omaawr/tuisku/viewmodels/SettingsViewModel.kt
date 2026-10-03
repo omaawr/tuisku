@@ -50,6 +50,7 @@ class SettingsViewModel(
     val showNotesNames = prefs.getShowNotesNames()
     val password = prefs.getPassword()
     val useBiometrics = prefs.getUseBiometrics()
+    val useAutoSave = prefs.getUseAutoSave()
 
     fun writeUseSystemFont(value: Boolean) {
         viewModelScope.launch {
@@ -78,6 +79,12 @@ class SettingsViewModel(
     fun writeUseBiometrics(value: Boolean) {
         viewModelScope.launch {
             prefs.writeUseBiometrics(value)
+        }
+    }
+
+    fun writeUseAutoSave(value: Boolean) {
+        viewModelScope.launch {
+            prefs.writeUseAutoSave(value)
         }
     }
 }

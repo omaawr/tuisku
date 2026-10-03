@@ -132,4 +132,14 @@ class Preferences(
             settings.copy(useBiometrics = value)
         }
     }
+
+    fun getUseAutoSave(): Flow<Boolean> = context.dataStore.data.map { settings ->
+        settings.useAutoSave
+    }
+
+    suspend fun writeUseAutoSave(value: Boolean) {
+        context.dataStore.updateData { settings ->
+            settings.copy(useAutoSave = value)
+        }
+    }
 }

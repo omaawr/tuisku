@@ -36,8 +36,10 @@ import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ShareFile
 import com.omaawr.tuisku.viewmodels.TextEditorUiState
 import com.omaawr.tuisku.viewmodels.TextEditorViewModel
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import java.io.File
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Text editor page
@@ -57,9 +59,11 @@ fun TextEditor(
     val uiState = viewModel.uiState
     val bytes = File(path).readBytes()
     val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
+    val useAutoSave = viewModel.useAutoSave.collectAsStateWithLifecycle(initialValue = false)
 
     val textFieldState = rememberTextFieldState()
     val shareFile = remember { mutableStateOf(false) }
+    val saved = remember { mutableStateOf(false) }
 
     if (shareFile.value) {
         ShareFile(textFieldState.text.toString())
@@ -82,6 +86,18 @@ fun TextEditor(
         }
     }
 
+    if (useAutoSave.value) {
+        LaunchedEffect(key1 = textFieldState.text) {
+            if (textFieldState.text.isEmpty()) return@LaunchedEffect
+            if (saved.value) saved.value = false
+
+            delay(500L.milliseconds)
+            viewModel.encrypt(textFieldState.text.toString(), path)
+
+            saved.value = true
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -97,11 +113,19 @@ fun TextEditor(
                 },
                 actions = {
                     if (!uiState.loading) {
-                        IconButton(onClick = {
-                            viewModel.encrypt(textFieldState.text.toString(), path)
-                        }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.encrypt(textFieldState.text.toString(), path)
+                                if (useAutoSave.value) saved.value = true
+                            },
+                            enabled = !saved.value
+                        ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_save),
+                                painter = if (useAutoSave.value) {
+                                    painterResource(R.drawable.ic_auto_save)
+                                } else {
+                                    painterResource(R.drawable.ic_save)
+                                },
                                 contentDescription = stringResource(R.string.save_note)
                             )
                         }

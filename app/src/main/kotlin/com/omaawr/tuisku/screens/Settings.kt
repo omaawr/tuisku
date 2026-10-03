@@ -82,6 +82,7 @@ fun Settings(
     val password = viewModel.password.collectAsStateWithLifecycle(initialValue = "")
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = false)
     val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false)
+    val useAutoSave = viewModel.useAutoSave.collectAsStateWithLifecycle(initialValue = false)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -135,6 +136,7 @@ fun Settings(
             password = password,
             showNotesNames = showNotesNames,
             useBiometrics = useBiometrics,
+            useAutoSave = useAutoSave,
             uiState = uiState,
             onWritePassword = {
                 viewModel.writePassword(it)
@@ -151,6 +153,9 @@ fun Settings(
             onWriteUseBiometrics = {
                 viewModel.writeUseBiometrics(it)
             },
+            onWriteUseAutoSave = {
+                viewModel.writeUseAutoSave(it)
+            },
             onPort = onPort
         )
     }
@@ -165,12 +170,14 @@ private fun Content(
     password: State<String>,
     showNotesNames: State<Boolean>,
     useBiometrics: State<Boolean>,
+    useAutoSave: State<Boolean>,
     uiState: SettingsUiState,
     onWritePassword: (value: String) -> Unit,
     onWriteShowNotesNames: (value: Boolean) -> Unit,
     onWriteDisableScreenshots: (value: Boolean) -> Unit,
     onWriteSystemFont: (value: Boolean) -> Unit,
     onWriteUseBiometrics: (value: Boolean) -> Unit,
+    onWriteUseAutoSave: (value: Boolean) -> Unit,
     onPort: () -> Unit
 ) {
     val context = LocalContext.current
@@ -192,7 +199,6 @@ private fun Content(
             }
         )
     )
-
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -312,6 +318,22 @@ private fun Content(
                         checked = useSystemFont.value,
                         onCheckedChange = {
                             onWriteSystemFont(it)
+                        },
+                    )
+                },
+                index = 1,
+                count = count
+            )
+        }
+
+        item {
+            SettingsItem(
+                text = { Text(stringResource(R.string.settings_pref_use_auto_save)) },
+                trailing = {
+                    Switch(
+                        checked = useAutoSave.value,
+                        onCheckedChange = {
+                            onWriteUseAutoSave(it)
                         },
                     )
                 },
