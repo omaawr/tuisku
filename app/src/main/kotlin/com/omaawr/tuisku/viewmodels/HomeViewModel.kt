@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omaawr.tuisku.settings.Preferences
+import com.omaawr.tuisku.settings.SettingsRepository
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -54,26 +54,30 @@ class SelectedFileState(
 )
 
 class HomeViewModel(
-    private val prefs: Preferences
+    private val settings: SettingsRepository
 ) : ViewModel() {
     val uiState: HomeUiState
         field = MutableHomeUiState()
 
-    val notePassword = prefs.getPassword()
-    val firstLaunch = prefs.getFirstLaunch()
-    val showNotesNames = prefs.getShowNotesNames()
-    val ivKey = prefs.getIVKey()
-    val useBiometrics = prefs.getUseBiometrics()
+    val notePassword = settings.password()
+    val firstLaunch = settings.firstLaunch()
+    val showNotesNames = settings.showNotesNames()
+    val ivKey = settings.ivKey()
+    val useBiometrics = settings.useBiometrics()
 
     fun writeFirstLaunch(value: Boolean) {
         viewModelScope.launch {
-            prefs.writeFirstLaunch(value)
+            settings.firstLaunch.update { settings ->
+                settings.copy(firstLaunch = value)
+            }
         }
     }
 
     fun writeIvKey(value: String) {
         viewModelScope.launch {
-            prefs.writeIVKey(value)
+            settings.ivKey.update { settings ->
+                settings.copy(viKey = value)
+            }
         }
     }
 }

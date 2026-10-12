@@ -20,7 +20,7 @@ import com.omaawr.tuisku.screens.Home
 import com.omaawr.tuisku.screens.Port
 import com.omaawr.tuisku.screens.Settings
 import com.omaawr.tuisku.screens.TextEditor
-import com.omaawr.tuisku.settings.Preferences
+import com.omaawr.tuisku.settings.SettingsRepository
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
 import java.io.File
@@ -32,11 +32,13 @@ import java.io.File
 fun App() {
     val ctx = LocalContext.current
     val encryptionManager = koinInject<EncryptionManager>()
-    val prefs = koinInject<Preferences>()
+    val settings = koinInject<SettingsRepository>()
 
     LaunchedEffect(Unit) {
-        if (prefs.getEncryptionKey().first().isEmpty()) {
-            prefs.writeEncryptionKey(encryptionManager.generateKey())
+        if (settings.encryptionKey().first().isEmpty()) {
+            settings.encryptionKey.update { settings ->
+                settings.copy(encryptionKey = encryptionManager.generateKey())
+            }
         }
     }
 

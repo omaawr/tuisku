@@ -9,7 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.flowWithLifecycle
-import com.omaawr.tuisku.settings.Preferences
+import com.omaawr.tuisku.settings.SettingsRepository
 import com.omaawr.tuisku.ui.theme.TuiskuTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -18,13 +18,13 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
-    private val settings: Preferences by inject()
+    private val settings: SettingsRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        settings.getDisableScreenshots()
+        settings.enableSecureMode()
             .launchInLifecycle(lifecycle) {
                 when (it) {
                     true -> {
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val useSystemFont =
-                settings.getUseSystemFont().collectAsStateWithLifecycle(initialValue = false)
+                settings.useSystemFont().collectAsStateWithLifecycle(initialValue = false)
 
             TuiskuTheme(
                 useSystemFont = useSystemFont.value

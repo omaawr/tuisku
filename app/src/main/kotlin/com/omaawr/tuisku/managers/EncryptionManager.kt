@@ -1,7 +1,7 @@
 package com.omaawr.tuisku.managers
 
 import android.content.Context
-import com.omaawr.tuisku.settings.Preferences
+import com.omaawr.tuisku.settings.SettingsRepository
 import kotlinx.coroutines.flow.first
 import java.io.File
 import java.nio.ByteBuffer
@@ -16,10 +16,10 @@ import kotlin.random.asKotlinRandom
  * Tuisku's Encryption manager, handiling encryption/decryption (obviously)
  *
  * @param context - Android context (provided by dependency injection, Koin)
- * @param prefs - Preferences, for getting the master key (also known as the encryption key)
+ * @param settings - SettingsRepository, for getting the master key (also known as the encryption key)
  */
 class EncryptionManager(
-    private val prefs: Preferences,
+    private val settings: SettingsRepository,
     private val context: Context
 ) {
     // (secureRandom bytes wrapped in base64 for backwards compatibility)
@@ -28,14 +28,14 @@ class EncryptionManager(
     )
 
     private suspend fun getEncryptionKey(): ByteArray {
-        val encryptionKeyIsBase64 = prefs.getEncryptionKey().first().length > 32 && pattern.matches(
-            prefs.getEncryptionKey().first()
+        val encryptionKeyIsBase64 = settings.encryptionKey().first().length > 32 && pattern.matches(
+            settings.encryptionKey().first()
         )
 
         return if (encryptionKeyIsBase64) {
-            Base64.decode(prefs.getEncryptionKey().first())
+            Base64.decode(settings.encryptionKey().first())
         } else {
-            prefs.getEncryptionKey().first().toByteArray()
+            settings.encryptionKey().first().toByteArray()
         }
     }
 
@@ -58,7 +58,7 @@ class EncryptionManager(
      */
     suspend fun migrateFile(index: Int, file: File) {
         val key = getEncryptionKey()
-        val oldNonce = Base64.decode(prefs.getIVKey().first()) // somehow i was super dumb at security at first so i thought iv was something to keep hidden when it was actually a nonce..
+        val oldNonce = Base64.decode(settings.ivKey().first()) // somehow i was super dumb at security at first so i thought iv was something to keep hidden when it was actually a nonce..
 
         val cipher = Cipher.getInstance("ChaCha20").apply {
             init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "ChaCha20"), IvParameterSpec(oldNonce))

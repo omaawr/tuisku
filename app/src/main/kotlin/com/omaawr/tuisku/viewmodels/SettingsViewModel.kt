@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omaawr.tuisku.settings.Preferences
+import com.omaawr.tuisku.settings.SettingsRepository
 import kotlinx.coroutines.launch
 
 interface SettingsUiState {
@@ -39,52 +39,64 @@ private class MutableSettingsUiState : SettingsUiState {
 }
 
 class SettingsViewModel(
-    private val prefs: Preferences
+    private val settings: SettingsRepository
 ) : ViewModel() {
     val uiState: SettingsUiState
         field = MutableSettingsUiState()
 
-    val encryptionKey = prefs.getEncryptionKey()
-    val useSystemFont = prefs.getUseSystemFont()
-    val disableScreenshots = prefs.getDisableScreenshots()
-    val showNotesNames = prefs.getShowNotesNames()
-    val password = prefs.getPassword()
-    val useBiometrics = prefs.getUseBiometrics()
-    val useAutoSave = prefs.getUseAutoSave()
+    val encryptionKey = settings.encryptionKey()
+    val useSystemFont = settings.useSystemFont()
+    val disableScreenshots = settings.enableSecureMode()
+    val showNotesNames = settings.showNotesNames()
+    val password = settings.password()
+    val useBiometrics = settings.useBiometrics()
+    val useAutoSave = settings.useAutoSave()
 
     fun writeUseSystemFont(value: Boolean) {
         viewModelScope.launch {
-            prefs.writeUseSystemFont(value)
+            settings.useSystemFont.update { settings ->
+                settings.copy(useSystemFont = value)
+            }
         }
     }
 
     fun writeShowNotesNames(value: Boolean) {
         viewModelScope.launch {
-            prefs.writeShowNotesNames(value)
+            settings.showNotesNames.update { settings ->
+                settings.copy(showNotesNames = value)
+            }
         }
     }
 
     fun writeDisableScreenshots(value: Boolean) {
         viewModelScope.launch {
-            prefs.writeDisableScreenshots(value)
+            settings.enableSecureMode.update { settings ->
+                settings.copy(disableScreenshots = value)
+            }
         }
     }
 
     fun writePassword(value: String) {
         viewModelScope.launch {
-            prefs.writePassword(value)
+            settings.password.update { settings ->
+                settings.copy(password = value)
+            }
         }
     }
 
     fun writeUseBiometrics(value: Boolean) {
         viewModelScope.launch {
-            prefs.writeUseBiometrics(value)
+            settings.useBiometrics.update { settings ->
+                settings.copy(useBiometrics = value)
+            }
         }
     }
 
     fun writeUseAutoSave(value: Boolean) {
         viewModelScope.launch {
-            prefs.writeUseAutoSave(value)
+            settings.useAutoSave.update { settings ->
+                settings.copy(useAutoSave = value)
+            }
         }
     }
 }
