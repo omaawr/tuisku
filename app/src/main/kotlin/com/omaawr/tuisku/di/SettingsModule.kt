@@ -2,6 +2,7 @@ package com.omaawr.tuisku.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.dataStoreFile
 import androidx.datastore.tink.AeadSerializer
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplate
@@ -15,7 +16,6 @@ import com.omaawr.tuisku.settings.SettingsSerializer
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import java.io.File
 
 val settingsModule = module {
     single<DataStore<Settings>> {
@@ -38,7 +38,7 @@ val settingsModule = module {
 
         DataStoreFactory.create(
             serializer = serializer,
-            produceFile = { File("${androidContext().filesDir}/datastore", "settings.json") }
+            produceFile = { androidContext().dataStoreFile("settings.json") }
         )
     }
 

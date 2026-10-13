@@ -58,7 +58,10 @@ import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
-import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.io.encoding.Base64
 import kotlin.io.path.readAttributes
 
@@ -210,7 +213,6 @@ private fun Content(
     onWriteFirstLaunch: (value: Boolean) -> Unit
 ) {
     val ctx = LocalContext.current
-    val locale = LocalLocale.current.platformLocale
     val resc = LocalResources.current
     val activity = LocalActivity.current!!
 
@@ -411,7 +413,9 @@ private fun Content(
                         attr.substring(attr.indexOf("ino=") + 4, attr.indexOf(")"))
                     }
                 ) { file ->
-                    val date = SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
+                    val timestamp = Instant.ofEpochMilli(file.lastModified())
+                    val unFormattedDate = LocalDateTime.ofInstant(timestamp, ZoneId.systemDefault())
+                    val date = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(unFormattedDate)
 
                     val decodedFilename = if (showNotesNames.value) {
                         produceState(initialValue = "", key1 = file.nameWithoutExtension) {
