@@ -143,7 +143,7 @@ private fun Content(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        item {
+        item(key = "IMPORT_NOTES_ENCRYPTED") {
             ListItem(
                 onClick = {
                     onImport()
@@ -156,7 +156,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "EXPORT_NOTES_ENCRYPTED") {
             ListItem(
                 onClick = {
                     onExport()
@@ -170,7 +170,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "IMPORT_NOTES_UNENCRYPTED") {
             ListItem(
                 onClick = {
                     onImportUnencrypted()
@@ -183,7 +183,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "EXPORT_NOTES_UNENCRYPTED") {
             ListItem(
                 onClick = {
                     onExportUnencrypted()
@@ -197,11 +197,11 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "IMPORT_EXPORT_SPACER", contentType = "DIVIDER") {
             Spacer(Modifier.height(8.dp))
         }
 
-        item {
+        item(key = "IMPORT_EXPORT_NOTES_DISCLAIMER") {
             Text(
                 text = stringResource(R.string.import_export_disclaimer),
                 fontSize = 12.sp

@@ -170,7 +170,7 @@ private fun Content(
     ) {
         when {
             uiState.loading -> {
-                item {
+                item(key = "LOADING_INDICATOR") {
                     Column(
                         modifier = Modifier.fillParentMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -182,7 +182,7 @@ private fun Content(
             }
 
             uiState.loaded -> {
-                item {
+                item(key = "TEXT_FIELD") {
                     TextField(
                         modifier = Modifier.fillParentMaxSize(),
                         placeholder = {

@@ -60,6 +60,7 @@ import org.koin.compose.koinInject
 import java.io.File
 import java.text.SimpleDateFormat
 import kotlin.io.encoding.Base64
+import kotlin.io.path.readAttributes
 
 // disclaimer: this code can be an absolute mess
 /**
@@ -404,7 +405,11 @@ private fun Content(
 
             else -> {
                 items(
-                    items = files
+                    items = files,
+                    key = { file ->
+                        val attr = file.toPath().readAttributes("fileKey").toString()
+                        attr.substring(attr.indexOf("ino=") + 4, attr.indexOf(")"))
+                    }
                 ) { file ->
                     val date = SimpleDateFormat("dd/MM/yyyy", locale).format(file.lastModified())
 

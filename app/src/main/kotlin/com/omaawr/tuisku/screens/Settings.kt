@@ -294,7 +294,7 @@ private fun Content(
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        item {
+        item(key = "SETTINGS_SECURE_MODE", contentType = "SETTING_SWITCH") {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_screenshots)) },
                 trailing = {
@@ -310,7 +310,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "SETTINGS_SYSTEM_FONT", contentType = "SETTING_SWITCH") {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_font)) },
                 trailing = {
@@ -326,7 +326,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "SETTINGS_USE_AUTO_SAVE", contentType = "SETTING_SWITCH") {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_use_auto_save)) },
                 trailing = {
@@ -343,7 +343,7 @@ private fun Content(
         }
 
 
-        item {
+        item(key = "SETTINGS_SHOW_NOTES_NAMES", contentType = "SETTING_SWITCH") {
             SettingsItem(
                 text = { Text(stringResource(R.string.show_notes_names)) },
                 trailing = {
@@ -369,7 +369,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "SETTINGS_USE_BIOMETRICS", contentType = "SETTING_SWITCH") {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_use_biometrics)) },
                 trailing = {
@@ -397,7 +397,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "SETTINGS_SHOW_ENCRYPTION_KEY") {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_encryption_keys)) },
                 onClick = {
@@ -426,7 +426,7 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "SETTINGS_SET_PASSWORD") {
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_set_password)) },
                 onClick = {
@@ -454,7 +454,7 @@ private fun Content(
         }
 
         if (password.value.isNotEmpty()) {
-            item {
+            item(key = "SETTINGS_REMOVE_PASSWORD") {
                 SettingsItem(
                     text = { Text(stringResource(R.string.settings_pref_remove_password)) },
                     onClick = {
@@ -467,7 +467,7 @@ private fun Content(
         }
 
 
-        item {
+        item(key = "SETTINGS_IMPORT_EXPORT") {
             SettingsItem(
                 text = { Text(stringResource(R.string.import_export_notes)) },
                 onClick = {
@@ -488,11 +488,11 @@ private fun Content(
             )
         }
 
-        item {
+        item(key = "SETTINGS_SPACER", contentType = "DIVIDER") {
             Spacer(Modifier.height(8.dp))
         }
 
-        item {
+        item(key = "SETTINGS_ABOUT_INFO") {
             Column {
                 Text(
                     text = stringResource(
@@ -508,7 +508,7 @@ private fun Content(
         }
 
         if (uiState.showEncryptionKeys) {
-            item {
+            item(key = "SETTINGS_SHOWN_ENCRYPTION_KEYS") {
                 Spacer(Modifier.height(8.dp))
 
                 Surface(
