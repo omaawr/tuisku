@@ -255,7 +255,7 @@ private fun Content(
                     uiState.showConfirmPassswordDialogForNotesNames = false
                 },
                 onSuccess = {
-                    onWriteShowNotesNames(true)
+                    if (showNotesNames.value) onWriteShowNotesNames(false) else onWriteShowNotesNames(true)
                     uiState.showConfirmPassswordDialogForNotesNames = false
                 },
                 password = password.value
