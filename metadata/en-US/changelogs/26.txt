@@ -1,0 +1,4 @@
+- feat: refactor settings api (a bit more simpler code)
+- feat: improve some peformance by adding keys to every LazyColumn (used everywhere)
+- feat: move some files/folders around (for example, the screens folder into the ui folder), aswell as adding copyright (gpl-3.0) notices to every file except for ones that were taken from another project and credited (only one)
+- fix: show notes name settings preference sometimes cant be disabled if already enabled
