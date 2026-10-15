@@ -1,11 +1,17 @@
-package com.omaawr.tuisku.viewmodels
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omaawr.tuisku.settings.SettingsRepository
+import com.omaawr.tuisku.domain.repo.SettingsRepository
 import kotlinx.coroutines.launch
 import java.io.File
 

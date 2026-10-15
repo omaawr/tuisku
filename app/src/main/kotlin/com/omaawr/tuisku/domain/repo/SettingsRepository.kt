@@ -1,6 +1,13 @@
-package com.omaawr.tuisku.settings
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.domain.repo
 
 import androidx.datastore.core.DataStore
+import com.omaawr.tuisku.domain.manager.BasePreferenceManager
 
 class SettingsRepository(
     settings: DataStore<Settings>

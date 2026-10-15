@@ -1,3 +1,9 @@
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 package com.omaawr.tuisku
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,13 +20,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import com.omaawr.tuisku.managers.EncryptionManager
+import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.navigation.Screen
-import com.omaawr.tuisku.screens.Home
-import com.omaawr.tuisku.screens.Port
-import com.omaawr.tuisku.screens.Settings
-import com.omaawr.tuisku.screens.TextEditor
-import com.omaawr.tuisku.settings.SettingsRepository
+import com.omaawr.tuisku.ui.screens.Home
+import com.omaawr.tuisku.ui.screens.Port
+import com.omaawr.tuisku.ui.screens.Settings
+import com.omaawr.tuisku.ui.screens.TextEditor
+import com.omaawr.tuisku.domain.repo.SettingsRepository
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
 import java.io.File

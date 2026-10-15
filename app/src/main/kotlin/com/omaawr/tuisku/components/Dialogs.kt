@@ -1,3 +1,9 @@
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 package com.omaawr.tuisku.components
 
 import android.widget.Toast
@@ -18,7 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import com.omaawr.tuisku.R
-import com.omaawr.tuisku.managers.EncryptionManager
+import com.omaawr.tuisku.domain.manager.EncryptionManager
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.io.File

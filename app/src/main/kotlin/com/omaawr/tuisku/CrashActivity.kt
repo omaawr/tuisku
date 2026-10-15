@@ -1,10 +1,16 @@
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 package com.omaawr.tuisku
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.omaawr.tuisku.screens.Crash
+import com.omaawr.tuisku.ui.screens.Crash
 import com.omaawr.tuisku.ui.theme.TuiskuTheme
 
 /**

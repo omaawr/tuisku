@@ -1,3 +1,9 @@
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 package com.omaawr.tuisku.di
 
 import androidx.datastore.core.DataStore
@@ -10,9 +16,9 @@ import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.PredefinedAeadParameters
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
-import com.omaawr.tuisku.settings.Settings
-import com.omaawr.tuisku.settings.SettingsRepository
-import com.omaawr.tuisku.settings.SettingsSerializer
+import com.omaawr.tuisku.domain.repo.Settings
+import com.omaawr.tuisku.domain.repo.SettingsRepository
+import com.omaawr.tuisku.domain.repo.SettingsSerializer
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module

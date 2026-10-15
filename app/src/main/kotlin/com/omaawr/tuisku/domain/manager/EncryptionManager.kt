@@ -1,7 +1,13 @@
-package com.omaawr.tuisku.managers
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.domain.manager
 
 import android.content.Context
-import com.omaawr.tuisku.settings.SettingsRepository
+import com.omaawr.tuisku.domain.repo.SettingsRepository
 import kotlinx.coroutines.flow.first
 import java.io.File
 import java.nio.ByteBuffer

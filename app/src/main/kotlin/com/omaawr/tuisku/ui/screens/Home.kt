@@ -1,4 +1,10 @@
-package com.omaawr.tuisku.screens
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.screens
 
 import androidx.activity.compose.LocalActivity
 import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
@@ -32,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,10 +54,10 @@ import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.RenameFileDialog
 import com.omaawr.tuisku.components.biometricCallback
-import com.omaawr.tuisku.managers.EncryptionManager
-import com.omaawr.tuisku.viewmodels.HomeUiState
-import com.omaawr.tuisku.viewmodels.HomeViewModel
-import com.omaawr.tuisku.viewmodels.SelectedFileState
+import com.omaawr.tuisku.domain.manager.EncryptionManager
+import com.omaawr.tuisku.ui.viewmodels.HomeUiState
+import com.omaawr.tuisku.ui.viewmodels.HomeViewModel
+import com.omaawr.tuisku.ui.viewmodels.SelectedFileState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel

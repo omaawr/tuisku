@@ -1,4 +1,10 @@
-package com.omaawr.tuisku.screens
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,8 +40,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ShareFile
-import com.omaawr.tuisku.viewmodels.TextEditorUiState
-import com.omaawr.tuisku.viewmodels.TextEditorViewModel
+import com.omaawr.tuisku.ui.viewmodels.TextEditorUiState
+import com.omaawr.tuisku.ui.viewmodels.TextEditorViewModel
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import java.io.File

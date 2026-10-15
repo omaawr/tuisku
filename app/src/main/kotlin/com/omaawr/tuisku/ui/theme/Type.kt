@@ -1,3 +1,9 @@
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 package com.omaawr.tuisku.ui.theme
 
 import androidx.compose.material3.Typography

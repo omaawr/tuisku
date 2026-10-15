@@ -1,8 +1,14 @@
-package com.omaawr.tuisku.viewmodels
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.viewmodels
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.omaawr.tuisku.managers.PortManager
+import com.omaawr.tuisku.domain.manager.PortManager
 
 class PortViewModel(
     private val portManager: PortManager

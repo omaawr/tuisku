@@ -1,3 +1,9 @@
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 package com.omaawr.tuisku
 
 import android.os.Bundle
@@ -9,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.flowWithLifecycle
-import com.omaawr.tuisku.settings.SettingsRepository
+import com.omaawr.tuisku.domain.repo.SettingsRepository
 import com.omaawr.tuisku.ui.theme.TuiskuTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +59,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// https://github.com/X1nto/Mauth/blob/67047ab457e98b09c6bdfc8c8406f2c3e8fb5a8b/app/src/main/java/com/xinto/mauth/util/Coroutines.kt#L20
+// This function comes from the file
+// https://github.com/X1nto/Mauth/blob/master/app/src/main/java/com/xinto/mauth/util/Coroutines.kt#L20
+// Copyright (c) 2026 X1nto and contributors
 fun <T> Flow<T>.launchInLifecycle(
     lifecycle: Lifecycle,
     state: Lifecycle.State = Lifecycle.State.STARTED,

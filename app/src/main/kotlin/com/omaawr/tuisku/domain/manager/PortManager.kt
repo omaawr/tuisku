@@ -1,4 +1,10 @@
-package com.omaawr.tuisku.managers
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.domain.manager
 
 import android.content.Context
 import android.net.Uri

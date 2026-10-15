@@ -1,4 +1,10 @@
-package com.omaawr.tuisku.screens
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.screens
 
 import android.content.res.Resources
 import android.os.Build
@@ -56,8 +62,8 @@ import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.SettingsItem
 import com.omaawr.tuisku.components.biometricCallback
 import com.omaawr.tuisku.components.checkBiometrics
-import com.omaawr.tuisku.viewmodels.SettingsUiState
-import com.omaawr.tuisku.viewmodels.SettingsViewModel
+import com.omaawr.tuisku.ui.viewmodels.SettingsUiState
+import com.omaawr.tuisku.ui.viewmodels.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 /**

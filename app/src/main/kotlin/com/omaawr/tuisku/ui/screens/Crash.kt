@@ -1,4 +1,10 @@
-package com.omaawr.tuisku.screens
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.screens
 
 import android.content.ClipData
 import android.widget.Toast

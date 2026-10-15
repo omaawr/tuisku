@@ -1,4 +1,10 @@
-package com.omaawr.tuisku.screens
+/*
+ * Tuisku, a silly notes app
+ * Copyright (c) 2026 Omar
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
+package com.omaawr.tuisku.ui.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.omaawr.tuisku.R
-import com.omaawr.tuisku.viewmodels.PortViewModel
+import com.omaawr.tuisku.ui.viewmodels.PortViewModel
 import org.koin.androidx.compose.koinViewModel
 
 /**
