@@ -10,16 +10,16 @@
 
 
 ### Preview
-<img src="./assets/preview.png">
+<img src="../assets/preview.png" alt="Tuisku image preview">
 
 ### Installation
-<a href="https://github.com/omaawr/tuisku/releases">Download the APK at the Releases page</a>, or get it on <a href="https://apt.izzysoft.de/fdroid/index/apk/com.omaawr.tuisku">IzzyOnDroid</a>
+<a href="https://codeberg.org/omawr/tuisku/releases">Download the APK at the Codeberg releases page</a>, or get it on <a href="https://apt.izzysoft.de/fdroid/index/apk/com.omaawr.tuisku">IzzyOnDroid</a>
 
-There's also a <a href="https://codeberg.org/omawr/tuisku">Codeberg mirror</a>.
+There's also the main <a href="https://github.com/omaawr/tuisku">Github repository</a>.
 
 ### Build Instructions
 Before compiling Tuisku, you may need to install:
-- the Android SDK (set with ANDROID_SDK on Linux)
+- the Android SDK (set with ANDROID_HOME on Linux)
 - a JDK such as Temurin (set with JAVA_HOME on Linux)
 
 If you have both installed, you can clone the repository and start compiling by cloning the repository and running Gradle, with these commands:
