@@ -6,9 +6,6 @@
 
 package com.omaawr.tuisku.ui.screens
 
-import androidx.activity.compose.LocalActivity
-import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
-import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -53,7 +50,6 @@ import com.omaawr.tuisku.components.NoteBottomSheet
 import com.omaawr.tuisku.components.NoticeDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.RenameFileDialog
-import com.omaawr.tuisku.components.biometricCallback
 import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.ui.viewmodels.HomeUiState
 import com.omaawr.tuisku.ui.viewmodels.HomeViewModel
@@ -96,10 +92,8 @@ fun Home(
     val filesWithUnencryptedFilename = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
     var files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
-    val password = viewModel.notePassword.collectAsStateWithLifecycle(initialValue = "")
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = true)
-    val useBiometrics = viewModel.useBiometrics.collectAsStateWithLifecycle(initialValue = false)
 
     DisposableEffect(Unit) {
         // somehow theres a ui bug where some dialogs and bottom sheet stay even after navigating to another page
@@ -189,10 +183,8 @@ fun Home(
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .padding(16.dp),
             uiState = uiState,
-            password = password,
             firstLaunch = firstLaunch,
             showNotesNames = showNotesNames,
-            useBiometrics = useBiometrics,
             onTextEditor = { path ->
                 onTextEditor(path)
             },
@@ -209,79 +201,22 @@ fun Home(
 private fun Content(
     modifier: Modifier,
     uiState: HomeUiState,
-    password: State<String>,
     firstLaunch: State<Boolean>,
     showNotesNames: State<Boolean>,
-    useBiometrics: State<Boolean>,
     onTextEditor: (path: String) -> Unit,
     encryptionManager: EncryptionManager,
     onWriteFirstLaunch: (value: Boolean) -> Unit
 ) {
     val ctx = LocalContext.current
     val resc = LocalResources.current
-    val activity = LocalActivity.current!!
 
     val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf(SelectedFileState()) }
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
-    var openingBottomSheet by remember { mutableStateOf(false) }
 
     uiState.showFirstLaunchDialog = firstLaunch.value
-
-    val launcher = rememberAuthenticationLauncher(
-        resultCallback = biometricCallback(
-            activity = activity,
-            onSuccess = {
-                when {
-                    openingBottomSheet -> uiState.showBottomSheet = true
-                    !openingBottomSheet -> navigateToTextEditor = true
-                }
-            },
-            onError = {
-                when {
-                    openingBottomSheet && password.value.isNotBlank() -> {
-                        uiState.showPasswordForBottomSheet = true
-                    }
-
-                    !openingBottomSheet && password.value.isNotBlank() -> {
-                        uiState.showPasswordDialog = true
-                    }
-                }
-            }
-        )
-    )
-
-    val noteOnClick = {
-        when {
-            useBiometrics.value -> {
-                launcher.launch(
-                    biometricRequest(
-                        title = resc.getString(R.string.biometric_title)
-                    ) {
-                        setSubtitle(resc.getString(R.string.unlock_decrypt_note))
-                    }
-                )
-            }
-
-            !useBiometrics.value && password.value.isNotBlank() -> {
-                if (openingBottomSheet) {
-                    uiState.showPasswordForBottomSheet = true
-                } else {
-                    uiState.showPasswordDialog = true
-                }
-            }
-
-            !useBiometrics.value && password.value.isBlank() -> {
-                if (openingBottomSheet) {
-                    uiState.showBottomSheet = true
-                } else {
-                    navigateToTextEditor = true
-                }
-            }
-        }
-    }
 
     when {
         navigateToTextEditor -> onTextEditor(selectedFile.path!!)
@@ -321,32 +256,6 @@ private fun Content(
                 onDismissRequest = {
                     uiState.showNewFileDialog = false
                 }
-            )
-        }
-
-        uiState.showPasswordDialog -> {
-            PasswordDialog(
-                onDismissRequest = {
-                    uiState.showPasswordDialog = false
-                },
-                onSuccess = {
-                    navigateToTextEditor = true
-                    uiState.showPasswordDialog = false
-                },
-                password = password.value
-            )
-        }
-
-        uiState.showPasswordForBottomSheet -> {
-            PasswordDialog(
-                onDismissRequest = {
-                    uiState.showPasswordForBottomSheet = false
-                },
-                onSuccess = {
-                    uiState.showBottomSheet = true
-                    uiState.showPasswordForBottomSheet = false
-                },
-                password = password.value
             )
         }
 
@@ -442,20 +351,14 @@ private fun Content(
                                 file,
                                 file.absolutePath
                             )
-
-                            openingBottomSheet = false
-
-                            noteOnClick()
+                            navigateToTextEditor = true
                         },
                         onLongClick = {
                             selectedFile = SelectedFileState(
                                 file,
                                 file.absolutePath
                             )
-
-                            openingBottomSheet = true
-
-                            noteOnClick()
+                            uiState.showBottomSheet = true
                         },
                         filename = decodedFilename.value,
                         date = date

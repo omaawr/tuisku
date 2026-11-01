@@ -10,8 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -100,16 +97,7 @@ fun Port(
     ) { innerPadding ->
         Content(
             modifier = Modifier
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current)
-                )
-                .padding(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                )
+                .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             onImport = {
                 importNotesLauncher.launch(arrayOf("application/zip"))
@@ -146,7 +134,9 @@ private fun Content(
     )
 
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         item(key = "IMPORT_NOTES_ENCRYPTED") {

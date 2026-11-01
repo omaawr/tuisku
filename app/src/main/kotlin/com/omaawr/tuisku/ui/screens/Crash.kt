@@ -48,8 +48,7 @@ fun Crash(
         Content(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
+                .padding(innerPadding),
             exception = exception
         )
     }
@@ -65,17 +64,17 @@ private fun Content(
     val res = LocalResources.current
 
     LazyColumn(
-        modifier = modifier
+        modifier = modifier.padding(16.dp)
     ) {
-        item {
+        item(key = "UNEXPECTED_ERROR_STRING") {
             Text(stringResource(R.string.unexpected_error))
         }
 
-        item {
+        item(key = "DIVIDER") {
             Spacer(Modifier.height(8.dp))
         }
 
-        item {
+        item(key = "ERROR_LOG") {
             Surface(
                 modifier = Modifier
                     .clip(

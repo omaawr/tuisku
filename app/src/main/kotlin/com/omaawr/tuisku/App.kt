@@ -7,13 +7,12 @@
 package com.omaawr.tuisku
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -21,12 +20,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.omaawr.tuisku.domain.manager.EncryptionManager
+import com.omaawr.tuisku.domain.repo.SettingsRepository
 import com.omaawr.tuisku.navigation.Screen
 import com.omaawr.tuisku.ui.screens.Home
+import com.omaawr.tuisku.ui.screens.Login
 import com.omaawr.tuisku.ui.screens.Port
 import com.omaawr.tuisku.ui.screens.Settings
 import com.omaawr.tuisku.ui.screens.TextEditor
-import com.omaawr.tuisku.domain.repo.SettingsRepository
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
 import java.io.File
@@ -39,6 +39,7 @@ fun App() {
     val ctx = LocalContext.current
     val encryptionManager = koinInject<EncryptionManager>()
     val settings = koinInject<SettingsRepository>()
+    val password = settings.password().collectAsStateWithLifecycle(initialValue = "")
 
     LaunchedEffect(Unit) {
         if (settings.encryptionKey().first().isEmpty()) {
@@ -57,7 +58,14 @@ fun App() {
         }
     }
 
-    val backStack = rememberNavBackStack(Screen.Home)
+    val backStack = rememberNavBackStack(
+        if (!password.value.isNotBlank()) {
+            Screen.Login
+        } else {
+            Screen.Home
+        }
+    )
+
     val onBack = {
         if (backStack.size >= 2) {
             backStack.removeLastOrNull()
@@ -93,21 +101,27 @@ fun App() {
                 onBack = onBack
             )
         }
-    }
 
-    Scaffold { contentPadding ->
-        NavDisplay(
-            modifier = Modifier.padding(contentPadding),
-            backStack = backStack,
-            entryProvider = entryProvider,
-            onBack = onBack,
-            sceneStrategies = remember { listOf(DialogSceneStrategy()) },
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-
-                // used to destory page's viewmodels on their exit
-                rememberViewModelStoreNavEntryDecorator()
+        entry<Screen.Login> {
+            Login(
+                onHome = {
+                    backStack.add(Screen.Home)
+                    backStack.remove(Screen.Login)
+                }
             )
-        )
+        }
     }
+
+    NavDisplay(
+        backStack = backStack,
+        entryProvider = entryProvider,
+        onBack = onBack,
+        sceneStrategies = remember { listOf(DialogSceneStrategy()) },
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+
+            // used to destory page's viewmodels on their exit
+            rememberViewModelStoreNavEntryDecorator()
+        )
+    )
 }

@@ -22,4 +22,7 @@ sealed class Screen : NavKey {
 
     @Serializable
     data class TextEditor(val filePath: String) : NavKey
+
+    @Serializable
+    data object Login : NavKey
 }

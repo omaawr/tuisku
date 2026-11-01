@@ -25,9 +25,9 @@
     <string name="settings_pref_screenshots">Disable screenshots</string>
     <string name="settings_pref_font">Use system font instead of Google Sans</string>
     <string name="settings_encryption_keys">Show encryption keys (not really recommended)</string>
-    <string name="settings_pref_set_password">Set password for notes</string>
+    <string name="settings_pref_set_password">Set password</string>
     <string name="settings_pref_set_password_button">Set/change</string>
-    <string name="settings_pref_remove_password">Remove password for notes</string>
+    <string name="settings_pref_remove_password">Remove password</string>
     <string name="settings_pref_remove_password_button">Remove</string>
     <string name="settings_pref_use_biometrics">Use biometrics (password will be used as fallback if set)</string>
 
@@ -47,7 +47,7 @@
     <string name="another_notice_dialog_desc">Your notes are migrated to a new nonce generation under a new filename which is typically "new-note-number", so you may have to rename the note. The contents of the note are still safe and exactly the same as beforehand, sorry about that security flaw :(</string>
     <string name="filename_error">&lt;an error occurred while rendering this filename, this may be a bomb which crashes the app if tapped on&gt;</string>
     <string name="note_last_modified_on_date">Last modified on %1$s</string>
-    <string name="build_info">Tuisku version %1$s (%2$s), running on Android SDK version %3$s, A silly notes app keeping your notes encrypted (internally) with ChaCha20</string>
+    <string name="build_info">Tuisku version %1$s (%2$s), running on Android SDK version %3$s, A silly notes app keeping your notes encrypted (internally) with ChaCha20.</string>
 
     <string name="import_export_notes">Import/export notes</string>
     <string name="import_notes">Import notes (encrypted)</string>
@@ -65,4 +65,8 @@
     <string name="unlock_decrypt_note">Unlock/decrypt note</string>
     <string name="write_settings_item_pref">Write settings item preferrence (or going to import/export, or showing encryption keys)</string>
     <string name="untitled_note_name">&lt;untitled&gt;</string>
+
+    <string name="enter_password_to_unlock_app">Enter password to access your notes</string>
+    <string name="failed_to_use_biometrics">Failed to use biometrics!</string>
+    <string name="use_biometrics">Use biometrics</string>
 </resources>

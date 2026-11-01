@@ -6,19 +6,12 @@
 
 package com.omaawr.tuisku.ui.screens
 
-import android.content.res.Resources
 import android.os.Build
 import android.widget.Toast
-import androidx.activity.compose.LocalActivity
-import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
-import androidx.biometric.AuthenticationResultLauncher
-import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,16 +32,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -60,7 +47,6 @@ import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ChangePasswordDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.SettingsItem
-import com.omaawr.tuisku.components.biometricCallback
 import com.omaawr.tuisku.components.checkBiometrics
 import com.omaawr.tuisku.ui.viewmodels.SettingsUiState
 import com.omaawr.tuisku.ui.viewmodels.SettingsViewModel
@@ -125,16 +111,7 @@ fun Settings(
     ) { innerPadding ->
         Content(
             modifier = Modifier
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current)
-                )
-                .padding(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                )
+                .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             encryptionKey = encryptionKey,
             useSystemFont = useSystemFont,
@@ -189,23 +166,6 @@ private fun Content(
     val context = LocalContext.current
     val count = if (password.value.isNotBlank()) 8 else 7
 
-    val activity = LocalActivity.current!!
-    val resources = LocalResources.current
-    var onBiometricSuccess by remember { mutableStateOf({}) }
-    var onBiometricError by remember { mutableStateOf({}) }
-
-    val launcher = rememberAuthenticationLauncher(
-        resultCallback = biometricCallback(
-            activity = activity,
-            onSuccess = {
-                onBiometricSuccess()
-            },
-            onError = {
-                if (password.value.isNotEmpty()) onBiometricError()
-            }
-        )
-    )
-
     when {
         uiState.showChangePasswordDialog -> {
             ChangePasswordDialog(
@@ -241,62 +201,11 @@ private fun Content(
                 password = password.value
             )
         }
-
-        uiState.showConfirmPassswordDialog -> {
-            PasswordDialog(
-                onDismissRequest = {
-                    uiState.showConfirmPassswordDialog = false
-                },
-                onSuccess = {
-                    uiState.showEncryptionKeys = true
-                    uiState.showConfirmPassswordDialog = false
-                },
-                password = password.value
-            )
-        }
-
-        uiState.showConfirmPassswordDialogForNotesNames -> {
-            PasswordDialog(
-                onDismissRequest = {
-                    uiState.showConfirmPassswordDialogForNotesNames = false
-                },
-                onSuccess = {
-                    if (showNotesNames.value) onWriteShowNotesNames(false) else onWriteShowNotesNames(true)
-                    uiState.showConfirmPassswordDialogForNotesNames = false
-                },
-                password = password.value
-            )
-        }
-
-        uiState.showConfirmPasswordDialogForPort -> {
-            PasswordDialog(
-                onDismissRequest = {
-                    uiState.showConfirmPasswordDialogForPort = false
-                },
-                onSuccess = {
-                    onPort()
-                    uiState.showConfirmPasswordDialogForPort = false
-                },
-                password = password.value
-            )
-        }
-
-        uiState.showConfirmPasswordDialogForBiometrics -> {
-            PasswordDialog(
-                onDismissRequest = {
-                    uiState.showConfirmPasswordDialogForBiometrics = false
-                },
-                onSuccess = {
-                    onWriteUseBiometrics(true)
-                    uiState.showConfirmPasswordDialogForBiometrics = false
-                },
-                password = password.value
-            )
-        }
     }
 
     LazyColumn(
         modifier = modifier
+            .padding(16.dp)
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
@@ -356,17 +265,7 @@ private fun Content(
                     Switch(
                         checked = showNotesNames.value,
                         onCheckedChange = {
-                            onBiometricSuccess = { onWriteShowNotesNames(it) }
-                            onBiometricError = { uiState.showConfirmPassswordDialogForNotesNames = true }
-
-                            settingsItemOnClick(
-                                onAction = onBiometricSuccess,
-                                onActionWithPassword = onBiometricError,
-                                password = password,
-                                useBiometrics = useBiometrics.value,
-                                resc = resources,
-                                launcher = launcher
-                            )
+                            onWriteShowNotesNames(it)
                         },
                     )
                 },
@@ -382,17 +281,7 @@ private fun Content(
                     Switch(
                         checked = useBiometrics.value,
                         onCheckedChange = {
-                            onBiometricSuccess = { onWriteUseBiometrics(it) }
-                            onBiometricError = { uiState.showConfirmPasswordDialogForBiometrics = true }
-
-                            settingsItemOnClick(
-                                onAction = onBiometricSuccess,
-                                onActionWithPassword = onBiometricError,
-                                password = password,
-                                useBiometrics = useBiometrics.value,
-                                resc = resources,
-                                launcher = launcher
-                            )
+                            onWriteUseBiometrics(it)
                         },
                         enabled = checkBiometrics(context)
                     )
@@ -413,17 +302,7 @@ private fun Content(
                         }
 
                         false -> {
-                            onBiometricSuccess = { uiState.showEncryptionKeys = true }
-                            onBiometricError = { uiState.showConfirmPassswordDialog = true }
-
-                            settingsItemOnClick(
-                                onAction = onBiometricSuccess,
-                                onActionWithPassword = onBiometricError,
-                                password = password,
-                                useBiometrics = useBiometrics.value,
-                                resc = resources,
-                                launcher = launcher
-                            )
+                            uiState.showEncryptionKeys = true
                         }
                     }
                 },
@@ -436,23 +315,7 @@ private fun Content(
             SettingsItem(
                 text = { Text(stringResource(R.string.settings_pref_set_password)) },
                 onClick = {
-                    when {
-                        useBiometrics.value -> {
-                            onBiometricSuccess = { uiState.showChangePasswordDialog = true }
-
-                            launcher.launch(
-                                biometricRequest(
-                                    title = resources.getString(R.string.biometric_title)
-                                ) {
-                                    setSubtitle(resources.getString(R.string.write_settings_item_pref))
-                                }
-                            )
-                        }
-
-                        !useBiometrics.value -> {
-                            uiState.showChangePasswordDialog = true
-                        }
-                    }
+                    uiState.showChangePasswordDialog = true
                 },
                 index = 5,
                 count = count
@@ -477,17 +340,7 @@ private fun Content(
             SettingsItem(
                 text = { Text(stringResource(R.string.import_export_notes)) },
                 onClick = {
-                    onBiometricSuccess = { onPort() }
-                    onBiometricError = { uiState.showConfirmPasswordDialogForPort = true }
-
-                    settingsItemOnClick(
-                        onAction = onBiometricSuccess,
-                        onActionWithPassword = onBiometricError,
-                        password = password,
-                        useBiometrics = useBiometrics.value,
-                        resc = resources,
-                        launcher = launcher
-                    )
+                    onPort()
                 },
                 index = if (password.value.isNotEmpty()) 7 else 6,
                 count = count,
@@ -539,35 +392,6 @@ private fun Content(
                     }
                 }
             }
-        }
-    }
-}
-
-fun settingsItemOnClick(
-    onAction: () -> Unit?,
-    onActionWithPassword: () -> Unit?,
-    useBiometrics: Boolean,
-    password: State<String>,
-    resc: Resources,
-    launcher: AuthenticationResultLauncher
-) {
-    when {
-        useBiometrics -> {
-            launcher.launch(
-                biometricRequest(
-                    title = resc.getString(R.string.biometric_title)
-                ) {
-                    setSubtitle(resc.getString(R.string.write_settings_item_pref))
-                }
-            )
-        }
-
-        !useBiometrics && password.value.isNotBlank() -> {
-            onActionWithPassword()
-        }
-
-        !useBiometrics && password.value.isBlank() -> {
-            onAction()
         }
     }
 }
