@@ -9,12 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 
 sealed interface State {
@@ -37,8 +33,6 @@ class AppViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun collectState() {
-        if (uiState.value is State.Loaded) return
-
         scope.launch {
             settings.password().collect { value ->
                 if (value.isNotEmpty()) {

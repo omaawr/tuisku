@@ -9,13 +9,14 @@ package com.omaawr.tuisku.domain.manager
 
 import androidx.datastore.core.DataStore
 import com.omaawr.tuisku.domain.repo.Settings
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 abstract class BasePreferenceManager(protected val settings: DataStore<Settings>) {
     fun <T> preference(getter: (Settings) -> T): Pref<T> = Pref(getter)
 
     inner class Pref<T>(val getter: (Settings) -> T) {
-        operator fun invoke() = settings.data.map(getter)
+        operator fun invoke() = settings.data.map(getter).distinctUntilChanged()
 
         suspend fun update(block: (Settings) -> Settings) = settings.updateData(block)
     }
