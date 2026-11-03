@@ -7,10 +7,12 @@ import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
@@ -73,7 +75,11 @@ private fun Content(
                 onHome()
             },
             onError = {
-                Toast.makeText(ctx, resources.getString(R.string.failed_to_use_biometrics), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    ctx,
+                    resources.getString(R.string.failed_to_use_biometrics),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         )
     )
@@ -96,36 +102,39 @@ private fun Content(
                 modifier = Modifier.fillMaxWidth(),
                 state = textFieldState,
                 isError = error.value,
+                enabled = password.isNotEmpty()
             )
 
             Row {
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f),
                     onClick = {
                         when {
                             textFieldState.text.toString() == password -> onHome()
                             else -> error.value = true
                         }
-                    }
+                    },
+                    enabled = password.isNotEmpty()
                 ) {
                     Text(stringResource(R.string.confirm))
                 }
 
-                if (usingBiometrics) {
-                    OutlinedButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            launcher.launch(
-                                biometricRequest(
-                                    title = resources.getString(R.string.biometric_title)
-                                ) {
-                                    setSubtitle(resources.getString(R.string.write_settings_item_pref))
-                                }
-                            )
-                        }
-                    ) {
-                        Text(stringResource(R.string.use_biometrics))
-                    }
+                Spacer(Modifier.width(4.dp))
+
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        launcher.launch(
+                            biometricRequest(
+                                title = resources.getString(R.string.biometric_title)
+                            ) {
+                                setSubtitle(resources.getString(R.string.write_settings_item_pref))
+                            }
+                        )
+                    },
+                    enabled = usingBiometrics
+                ) {
+                    Text(stringResource(R.string.use_biometrics))
                 }
             }
         }

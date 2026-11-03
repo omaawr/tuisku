@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 sealed interface State {
     data object Loading : State
-    data class Loaded(val usingPassword: Boolean) : State
+    data class Loaded(val useAuthentication: Boolean) : State
 }
 
 class AppViewModel(
@@ -35,7 +35,7 @@ class AppViewModel(
     fun collectState() {
         scope.launch {
             settings.password().collect { value ->
-                if (value.isNotEmpty()) {
+                if (value.isNotEmpty() || settings.useBiometrics().first()) {
                     uiState.value = State.Loaded(true)
                 } else {
                     uiState.value = State.Loaded(false)

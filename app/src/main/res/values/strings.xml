@@ -66,7 +66,7 @@
     <string name="write_settings_item_pref">Write settings item preferrence (or going to import/export, or showing encryption keys)</string>
     <string name="untitled_note_name">&lt;untitled&gt;</string>
 
-    <string name="enter_password_to_unlock_app">Enter password to access your notes</string>
+    <string name="enter_password_to_unlock_app">Enter password (or use biometrics) to access your notes</string>
     <string name="failed_to_use_biometrics">Failed to use biometrics!</string>
     <string name="use_biometrics">Use biometrics</string>
 </resources>
