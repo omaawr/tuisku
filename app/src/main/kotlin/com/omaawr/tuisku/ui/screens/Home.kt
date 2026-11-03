@@ -48,7 +48,6 @@ import com.omaawr.tuisku.components.NewFileDialog
 import com.omaawr.tuisku.components.Note
 import com.omaawr.tuisku.components.NoteBottomSheet
 import com.omaawr.tuisku.components.NoticeDialog
-import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.RenameFileDialog
 import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.ui.viewmodels.HomeUiState

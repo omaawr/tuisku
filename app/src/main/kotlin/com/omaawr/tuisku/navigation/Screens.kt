@@ -25,4 +25,7 @@ sealed class Screen : NavKey {
 
     @Serializable
     data object Login : NavKey
+
+    @Serializable
+    data object Landing : NavKey
 }

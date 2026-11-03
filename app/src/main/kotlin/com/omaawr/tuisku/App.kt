@@ -9,45 +9,38 @@ package com.omaawr.tuisku
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import com.omaawr.tuisku.domain.manager.EncryptionManager
-import com.omaawr.tuisku.domain.repo.SettingsRepository
 import com.omaawr.tuisku.navigation.Screen
 import com.omaawr.tuisku.ui.screens.Home
+import com.omaawr.tuisku.ui.screens.Landing
 import com.omaawr.tuisku.ui.screens.Login
 import com.omaawr.tuisku.ui.screens.Port
 import com.omaawr.tuisku.ui.screens.Settings
 import com.omaawr.tuisku.ui.screens.TextEditor
-import kotlinx.coroutines.flow.first
-import org.koin.compose.koinInject
+import com.omaawr.tuisku.ui.viewmodels.AppViewModel
+import com.omaawr.tuisku.ui.viewmodels.State
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
 /**
  * App entry point (obviously)
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun App() {
     val ctx = LocalContext.current
-    val encryptionManager = koinInject<EncryptionManager>()
-    val settings = koinInject<SettingsRepository>()
-    val password = settings.password().collectAsStateWithLifecycle(initialValue = "")
-
-    LaunchedEffect(Unit) {
-        if (settings.encryptionKey().first().isEmpty()) {
-            settings.encryptionKey.update { settings ->
-                settings.copy(encryptionKey = encryptionManager.generateKey())
-            }
-        }
-    }
+    val viewModel: AppViewModel = koinViewModel()
+    val uiState = viewModel.uiState.collectAsState()
 
     // 1.1.3-1 and earlier used to use the cache for when the user tries to share a note,
     // the note sometimes wouldn't delete on exit, however, with 1.1.4, it doesn't have to cache a note to share
@@ -58,14 +51,7 @@ fun App() {
         }
     }
 
-    val backStack = rememberNavBackStack(
-        if (!password.value.isNotBlank()) {
-            Screen.Login
-        } else {
-            Screen.Home
-        }
-    )
-
+    val backStack = rememberNavBackStack(Screen.Landing)
     val onBack = {
         if (backStack.size >= 2) {
             backStack.removeLastOrNull()
@@ -73,6 +59,10 @@ fun App() {
     }
 
     val entryProvider = entryProvider {
+        entry<Screen.Landing> {
+            Landing()
+        }
+
         entry<Screen.Home> {
             Home(
                 modifier = Modifier.fillMaxSize(),
@@ -110,6 +100,20 @@ fun App() {
                 }
             )
         }
+    }
+
+    when (uiState.value) {
+        State.Loaded(true) if !backStack.contains(Screen.Home) -> {
+            backStack.add(Screen.Login)
+            backStack.remove(Screen.Landing)
+        }
+
+        State.Loaded(false) if !backStack.contains(Screen.Home) -> {
+            backStack.add(Screen.Home)
+            backStack.remove(Screen.Landing)
+        }
+
+        else -> {}
     }
 
     NavDisplay(

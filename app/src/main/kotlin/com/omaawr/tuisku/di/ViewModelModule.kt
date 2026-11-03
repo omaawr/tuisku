@@ -6,6 +6,7 @@
 
 package com.omaawr.tuisku.di
 
+import com.omaawr.tuisku.ui.viewmodels.AppViewModel
 import com.omaawr.tuisku.ui.viewmodels.HomeViewModel
 import com.omaawr.tuisku.ui.viewmodels.LoginViewModel
 import com.omaawr.tuisku.ui.viewmodels.PortViewModel
@@ -20,4 +21,5 @@ val viewModelsModule = module {
     viewModelOf(::TextEditorViewModel)
     viewModelOf(::PortViewModel)
     viewModelOf(::LoginViewModel)
+    viewModelOf(::AppViewModel)
 }
