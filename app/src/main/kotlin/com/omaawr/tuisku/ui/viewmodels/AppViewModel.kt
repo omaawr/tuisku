@@ -1,5 +1,6 @@
 package com.omaawr.tuisku.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.domain.repo.SettingsRepository
@@ -36,21 +37,15 @@ class AppViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun collectState() {
-        scope.launch {
-            val flow = settings.password().transformLatest { trigger ->
-                if (trigger.isNotEmpty()) {
-                    emit(State.Loaded(true))
-                } else {
-                    emit(State.Loaded(false))
-                }
-            }.distinctUntilChanged().stateIn(
-                scope,
-                SharingStarted.Eagerly,
-                State.Loading
-            )
+        if (uiState.value is State.Loaded) return
 
-            flow.collect { state ->
-                uiState.value = state
+        scope.launch {
+            settings.password().collect { value ->
+                if (value.isNotEmpty()) {
+                    uiState.value = State.Loaded(true)
+                } else {
+                    uiState.value = State.Loaded(false)
+                }
             }
         }
     }
