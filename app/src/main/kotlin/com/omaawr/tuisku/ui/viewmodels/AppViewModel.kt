@@ -1,13 +1,10 @@
 package com.omaawr.tuisku.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.domain.repo.SettingsRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -22,9 +19,9 @@ class AppViewModel(
     val settings: SettingsRepository,
     val encryptionManager: EncryptionManager
 ) : ViewModel() {
-    val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     val uiState: StateFlow<State>
         field = MutableStateFlow<State>(State.Loading)
+    val isUsingBiometrics = settings.useBiometrics()
 
     init {
         checkEncryptionKeys()
@@ -32,8 +29,8 @@ class AppViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun collectState() {
-        scope.launch {
+    private fun collectState() {
+        viewModelScope.launch {
             settings.password().collect { value ->
                 if (value.isNotEmpty() || settings.useBiometrics().first()) {
                     uiState.value = State.Loaded(true)
@@ -44,12 +41,20 @@ class AppViewModel(
         }
     }
 
-    fun checkEncryptionKeys() {
-        scope.launch {
+    private fun checkEncryptionKeys() {
+        viewModelScope.launch {
             if (settings.encryptionKey().first().isEmpty()) {
                 settings.encryptionKey.update { settings ->
                     settings.copy(encryptionKey = encryptionManager.generateKey())
                 }
+            }
+        }
+    }
+
+    fun updateUseBiometrics() {
+        viewModelScope.launch {
+            settings.useBiometrics.update { settings ->
+                settings.copy(useBiometrics = false)
             }
         }
     }

@@ -19,6 +19,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import com.omaawr.tuisku.components.checkBiometrics
 import com.omaawr.tuisku.navigation.Screen
 import com.omaawr.tuisku.ui.screens.Home
 import com.omaawr.tuisku.ui.screens.Landing
@@ -29,6 +30,7 @@ import com.omaawr.tuisku.ui.screens.TextEditor
 import com.omaawr.tuisku.ui.viewmodels.AppViewModel
 import com.omaawr.tuisku.ui.viewmodels.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
@@ -48,6 +50,13 @@ fun App() {
     LaunchedEffect(Unit) {
         if (File(ctx.cacheDir, "note.txt").exists()) {
             File(ctx.cacheDir, "note.txt").delete()
+        }
+
+        // sometimes there can be an issue where if the user has biometrics enabled,
+        // but then disables it without disabiling it first in the app, it can cause an issue if biometrics are
+        // the only authentication method used for login
+        if (viewModel.isUsingBiometrics.first() && !checkBiometrics(ctx)) {
+            viewModel.updateUseBiometrics()
         }
     }
 

@@ -84,7 +84,6 @@ private fun Content(
         )
     )
 
-    // i was too lazy to use LazyColumn lol
     Column(
         modifier = modifier
             .fillMaxSize()

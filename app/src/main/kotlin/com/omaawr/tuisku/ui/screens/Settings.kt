@@ -8,6 +8,9 @@ package com.omaawr.tuisku.ui.screens
 
 import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.LocalActivity
+import androidx.biometric.AuthenticationRequest.Companion.biometricRequest
+import androidx.biometric.compose.rememberAuthenticationLauncher
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -47,6 +51,7 @@ import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ChangePasswordDialog
 import com.omaawr.tuisku.components.PasswordDialog
 import com.omaawr.tuisku.components.SettingsItem
+import com.omaawr.tuisku.components.biometricCallback
 import com.omaawr.tuisku.components.checkBiometrics
 import com.omaawr.tuisku.ui.viewmodels.SettingsUiState
 import com.omaawr.tuisku.ui.viewmodels.SettingsViewModel
@@ -164,7 +169,25 @@ private fun Content(
     onPort: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = LocalActivity.current
+    val resources = LocalResources.current
     val count = if (password.value.isNotBlank()) 8 else 7
+
+    val launcher = rememberAuthenticationLauncher(
+        resultCallback = biometricCallback(
+            activity = activity!!,
+            onSuccess = {
+                onWriteUseBiometrics(true)
+            },
+            onError = {
+                Toast.makeText(
+                    context,
+                    resources.getString(R.string.failed_to_use_biometrics),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+    )
 
     when {
         uiState.showChangePasswordDialog -> {
@@ -281,7 +304,17 @@ private fun Content(
                     Switch(
                         checked = useBiometrics.value,
                         onCheckedChange = {
-                            onWriteUseBiometrics(it)
+                            if (it) {
+                                launcher.launch(
+                                    biometricRequest(
+                                        title = resources.getString(R.string.biometric_title)
+                                    ) {
+                                        setSubtitle(resources.getString(R.string.write_settings_item_pref))
+                                    }
+                                )
+                            } else {
+                                onWriteUseBiometrics(false)
+                            }
                         },
                         enabled = checkBiometrics(context)
                     )
