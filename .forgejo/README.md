@@ -29,15 +29,6 @@ git clone https://github.com/omaawr/tuisku.git && cd tuisku/app
 # apk should now be at ./build/outputs/apk/debug/app-debug.apk (or ./app/release/app-release.apk if its a release build)
 ```
 
-### Star History
-<a href="https://www.star-history.com/?repos=omaawr%2Ftuisku&type=timeline&legend=bottom-right">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=omaawr/tuisku&type=date&theme=dark&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=omaawr/tuisku&type=date&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=omaawr/tuisku&type=date&legend=bottom-right" />
- </picture>
-</a>
-
 ### AI disclaimer
 AI generated code is not permitted in this repository.
 
