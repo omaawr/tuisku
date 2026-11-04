@@ -1,0 +1,2 @@
+- feat: use svgs for app icon (the app icon is slightly adjusted now, dynamic theming works now)
+- fix: check if biometrics is enabled in the system, use ViewModelScope on AppViewModel
