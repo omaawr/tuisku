@@ -6,6 +6,7 @@
 
 package com.omaawr.tuisku.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,7 @@ import com.omaawr.tuisku.ui.viewmodels.HomeUiState
 import com.omaawr.tuisku.ui.viewmodels.HomeViewModel
 import com.omaawr.tuisku.ui.viewmodels.SelectedFileState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -88,7 +91,8 @@ fun Home(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val ivKey = viewModel.ivKey.collectAsStateWithLifecycle(initialValue = "")
 
-    val filesWithUnencryptedFilename = ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
+    val filesWithUnencryptedFilename =
+        ctx.filesDir.listFiles()!!.filter { it.name.contains(".txt") }
     var files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
@@ -106,7 +110,8 @@ fun Home(
         filesWithUnencryptedFilename.isNotEmpty() -> {
             LaunchedEffect(Unit) {
                 filesWithUnencryptedFilename.forEach { file ->
-                    val encryptedFilename = encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
+                    val encryptedFilename =
+                        encryptionManager.encryptFilename(file.nameWithoutExtension.toByteArray())
 
                     File(
                         ctx.filesDir,
@@ -177,7 +182,8 @@ fun Home(
         },
     ) { innerPadding ->
         Content(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .padding(16.dp),
@@ -190,6 +196,9 @@ fun Home(
             encryptionManager = encryptionManager,
             onWriteFirstLaunch = { value ->
                 viewModel.writeFirstLaunch(value)
+            },
+            onUseNoteOnWidget = { value ->
+                viewModel.writeUseNoteOnWidget(value)
             }
         )
     }
@@ -204,10 +213,12 @@ private fun Content(
     showNotesNames: State<Boolean>,
     onTextEditor: (path: String) -> Unit,
     encryptionManager: EncryptionManager,
-    onWriteFirstLaunch: (value: Boolean) -> Unit
+    onWriteFirstLaunch: (value: Boolean) -> Unit,
+    onUseNoteOnWidget: (value: String) -> Unit
 ) {
     val ctx = LocalContext.current
     val resc = LocalResources.current
+    val scope = rememberCoroutineScope()
 
     val files = ctx.filesDir.listFiles()!!.filter { it.name.contains(".encrypted-note") }
 
@@ -293,6 +304,16 @@ private fun Content(
                 },
                 onDeleteNoteClick = {
                     uiState.showDeleteFileDialog = true
+                },
+                onUseNoteOnWidgetClick = {
+                    onUseNoteOnWidget(selectedFile.path!!)
+
+                    scope.launch {
+                        sheetState.hide()
+                        uiState.showBottomSheet = false
+                    }
+
+                    Toast.makeText(ctx, "Using note on home screen", Toast.LENGTH_SHORT).show()
                 }
             )
         }

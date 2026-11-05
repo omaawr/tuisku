@@ -69,4 +69,8 @@
     <string name="enter_password_to_unlock_app">Enter password (or use biometrics) to access your notes</string>
     <string name="failed_to_use_biometrics">Failed to use biometrics!</string>
     <string name="use_biometrics">Use biometrics</string>
+
+    <string name="widget_loading">Note is loading</string>
+    <string name="widget_error">Something went horribly wrong while decrypting the content, did you set a note to be in use(?)</string>
+    <string name="use_note_on_widget">Use note on widget</string>
 </resources>

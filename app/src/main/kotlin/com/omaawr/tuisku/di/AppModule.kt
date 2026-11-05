@@ -8,6 +8,7 @@ package com.omaawr.tuisku.di
 
 import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.domain.manager.PortManager
+import com.omaawr.tuisku.domain.manager.WidgetManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -23,6 +24,13 @@ val appModule = module {
 
     single<PortManager> {
         PortManager(
+            get(),
+            get()
+        )
+    }
+
+    single<WidgetManager> {
+        WidgetManager(
             get(),
             get()
         )

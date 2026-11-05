@@ -25,4 +25,6 @@ class SettingsRepository(
     // this isn't really used anymore, this was kind of back when i was a bit dumb at security (tuisku was my first actual
     // android app after all)
     val ivKey = preference(Settings::viKey)
+
+    val noteToUseOnWidget = preference(Settings::noteToUseOnWidget)
 }

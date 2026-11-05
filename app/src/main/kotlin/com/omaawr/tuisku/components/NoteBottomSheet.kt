@@ -40,7 +40,8 @@ fun NoteBottomSheet(
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
     onRenameNoteClick: () -> Unit,
-    onDeleteNoteClick: () -> Unit
+    onDeleteNoteClick: () -> Unit,
+    onUseNoteOnWidgetClick: () -> Unit
 ) {
     val colors = ListItemDefaults.colors(
         containerColor = Color.Transparent,
@@ -71,6 +72,22 @@ fun NoteBottomSheet(
                 },
                 onClick = {
                     onRenameNoteClick()
+                },
+                colors = colors
+            )
+
+            ListItem(
+                content = {
+                    Text(stringResource(R.string.use_note_on_widget))
+                },
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_widgets),
+                        contentDescription = null
+                    )
+                },
+                onClick = {
+                    onUseNoteOnWidgetClick()
                 },
                 colors = colors
             )

@@ -25,7 +25,8 @@ data class Settings(
     val firstLaunch: Boolean = true,
     val showNotesNames: Boolean = true,
     val useBiometrics: Boolean = false,
-    val useAutoSave: Boolean = false
+    val useAutoSave: Boolean = false,
+    val noteToUseOnWidget: String = ""
 )
 
 object SettingsSerializer : Serializer<Settings> {

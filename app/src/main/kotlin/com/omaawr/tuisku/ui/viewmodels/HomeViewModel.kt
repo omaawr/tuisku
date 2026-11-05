@@ -75,4 +75,12 @@ class HomeViewModel(
             }
         }
     }
+
+    fun writeUseNoteOnWidget(value: String) {
+        viewModelScope.launch {
+            settings.noteToUseOnWidget.update { settings ->
+                settings.copy(noteToUseOnWidget = value)
+            }
+        }
+    }
 }
