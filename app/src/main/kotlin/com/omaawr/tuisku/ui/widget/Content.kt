@@ -1,15 +1,15 @@
 package com.omaawr.tuisku.ui.widget
 
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.actionStartActivity
+import androidx.glance.appwidget.components.CircleIconButton
 import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.components.TitleBar
 import androidx.glance.appwidget.lazy.LazyColumn
@@ -19,6 +19,8 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
+import androidx.glance.text.TextStyle
+import com.omaawr.tuisku.MainActivity
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.domain.manager.WidgetManager
 import com.omaawr.tuisku.domain.manager.WidgetState
@@ -29,19 +31,25 @@ import org.koin.compose.koinInject
 fun Widget() {
     val widgetManager = koinInject<WidgetManager>()
     val uiState = widgetManager.uiState.collectAsState()
-    val res = LocalContext.current.resources // no LocalResources in glance
+    val ctx = LocalContext.current
+    val res = ctx.resources // no LocalResources in glance
 
     when (uiState.value) {
         is WidgetState.Loading -> {
             Column(
                 modifier = GlanceModifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(GlanceTheme.colors.surface)
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(res.getString(R.string.widget_loading))
+                Text(
+                    text = res.getString(R.string.widget_loading),
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onSurface
+                    )
+                )
             }
         }
 
@@ -50,7 +58,13 @@ fun Widget() {
                 titleBar = {
                     TitleBar(
                         title = (uiState.value as WidgetState.Loaded).decryptedFilename,
-                        actions = {},
+                        actions = {
+                            CircleIconButton(
+                                imageProvider = ImageProvider(R.drawable.ic_edit),
+                                contentDescription = null,
+                                onClick = actionStartActivity<MainActivity>()
+                            )
+                        },
                         startIcon = ImageProvider(R.drawable.ic_file_present)
                     )
                 }
@@ -60,7 +74,10 @@ fun Widget() {
                 ) {
                     item {
                         Text(
-                            (uiState.value as WidgetState.Loaded).decryptedContent
+                            text = (uiState.value as WidgetState.Loaded).decryptedContent,
+                            style = TextStyle(
+                                color = GlanceTheme.colors.onSurface
+                            )
                         )
                     }
                 }
@@ -71,12 +88,17 @@ fun Widget() {
             Column(
                 modifier = GlanceModifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(GlanceTheme.colors.surface)
                     .padding(16.dp),
                 verticalAlignment = Alignment.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(res.getString(R.string.widget_error))
+                Text(
+                    text = res.getString(R.string.widget_error),
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onSurface
+                    )
+                )
             }
         }
     }
