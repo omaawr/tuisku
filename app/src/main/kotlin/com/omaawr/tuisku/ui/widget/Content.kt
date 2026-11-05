@@ -4,10 +4,12 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.components.TitleBar
 import androidx.glance.appwidget.lazy.LazyColumn
@@ -27,6 +29,7 @@ import org.koin.compose.koinInject
 fun Widget() {
     val widgetManager = koinInject<WidgetManager>()
     val uiState = widgetManager.uiState.collectAsState()
+    val res = LocalContext.current.resources // no LocalResources in glance
 
     when (uiState.value) {
         is WidgetState.Loading -> {
@@ -38,7 +41,7 @@ fun Widget() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(R.string.widget_loading))
+                Text(res.getString(R.string.widget_loading))
             }
         }
 
@@ -73,7 +76,7 @@ fun Widget() {
                 verticalAlignment = Alignment.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(R.string.widget_error))
+                Text(res.getString(R.string.widget_error))
             }
         }
     }
