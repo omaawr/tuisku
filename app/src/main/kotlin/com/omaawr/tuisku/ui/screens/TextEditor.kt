@@ -29,17 +29,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.ShareFile
 import com.omaawr.tuisku.ui.viewmodels.TextEditorUiState
 import com.omaawr.tuisku.ui.viewmodels.TextEditorViewModel
+import com.omaawr.tuisku.widget.AppWidget
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
@@ -63,6 +68,9 @@ fun TextEditor(
     val bytes = File(path).readBytes()
     val decryptedData = viewModel.decrypt(bytes).collectAsStateWithLifecycle(initialValue = null)
     val useAutoSave = viewModel.useAutoSave.collectAsStateWithLifecycle(initialValue = false)
+    val notesWidgetsListIsNotEmpty = viewModel.notesWidgetsList.collectAsStateWithLifecycle(initialValue = emptyList()).value.isNotEmpty()
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val textFieldState = rememberTextFieldState()
     val shareFile = remember { mutableStateOf(false) }
@@ -91,11 +99,11 @@ fun TextEditor(
 
     if (useAutoSave.value) {
         LaunchedEffect(key1 = textFieldState.text) {
-            if (textFieldState.text.isEmpty()) return@LaunchedEffect
             if (saved.value) saved.value = false
 
-            delay(500L.milliseconds)
+            delay(800L.milliseconds)
             viewModel.encrypt(textFieldState.text.toString(), path)
+            if (notesWidgetsListIsNotEmpty) AppWidget().updateAll(ctx)
 
             saved.value = true
         }
@@ -119,6 +127,12 @@ fun TextEditor(
                         IconButton(
                             onClick = {
                                 viewModel.encrypt(textFieldState.text.toString(), path)
+                                if (notesWidgetsListIsNotEmpty) {
+                                    scope.launch {
+                                        AppWidget().updateAll(ctx)
+                                    }
+                                }
+
                                 if (useAutoSave.value) saved.value = true
                             },
                             enabled = !saved.value

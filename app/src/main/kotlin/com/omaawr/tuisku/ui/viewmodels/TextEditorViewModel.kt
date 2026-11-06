@@ -35,6 +35,7 @@ class TextEditorViewModel(
     val uiState: TextEditorUiState
         field = MutableTextEditorUiState()
     val useAutoSave = settings.useAutoSave()
+    val notesWidgetsList = settings.noteToUseOnWidget()
 
     fun encrypt(data: String, filePath: String) {
         viewModelScope.launch {
