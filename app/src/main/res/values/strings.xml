@@ -72,5 +72,8 @@
 
     <string name="widget_loading">Note is loading</string>
     <string name="widget_error">Something went horribly wrong while decrypting the content, did you set a note to be in use(?)</string>
-    <string name="use_note_on_widget">Use note on widget</string>
+    <string name="use_note_on_widget">Use/remove note on widgets</string>
+
+    <string name="added_note_to_widgets">Added note to widgets</string>
+    <string name="removed_note_from_widgets">Removed note from widgets</string>
 </resources>

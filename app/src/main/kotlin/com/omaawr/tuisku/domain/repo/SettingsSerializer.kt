@@ -26,7 +26,7 @@ data class Settings(
     val showNotesNames: Boolean = true,
     val useBiometrics: Boolean = false,
     val useAutoSave: Boolean = false,
-    val noteToUseOnWidget: String = ""
+    val noteToUseOnWidget: List<String> = emptyList()
 )
 
 object SettingsSerializer : Serializer<Settings> {

@@ -59,6 +59,7 @@ class HomeViewModel(
     val firstLaunch = settings.firstLaunch()
     val showNotesNames = settings.showNotesNames()
     val ivKey = settings.ivKey()
+    val notesToUseOnWidget = settings.noteToUseOnWidget()
 
     fun writeFirstLaunch(value: Boolean) {
         viewModelScope.launch {
@@ -76,7 +77,7 @@ class HomeViewModel(
         }
     }
 
-    fun writeUseNoteOnWidget(value: String) {
+    fun writeUseNoteOnWidget(value: List<String>) {
         viewModelScope.launch {
             settings.noteToUseOnWidget.update { settings ->
                 settings.copy(noteToUseOnWidget = value)

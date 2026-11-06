@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omaawr.tuisku.R
 import com.omaawr.tuisku.components.AnotherNoticeDialog
@@ -55,6 +56,7 @@ import com.omaawr.tuisku.domain.manager.EncryptionManager
 import com.omaawr.tuisku.ui.viewmodels.HomeUiState
 import com.omaawr.tuisku.ui.viewmodels.HomeViewModel
 import com.omaawr.tuisku.ui.viewmodels.SelectedFileState
+import com.omaawr.tuisku.widget.AppWidget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -97,6 +99,7 @@ fun Home(
 
     val firstLaunch = viewModel.firstLaunch.collectAsStateWithLifecycle(initialValue = false)
     val showNotesNames = viewModel.showNotesNames.collectAsStateWithLifecycle(initialValue = true)
+    val notesToUseOnWidget = viewModel.notesToUseOnWidget.collectAsStateWithLifecycle(initialValue = emptyList())
 
     DisposableEffect(Unit) {
         // somehow theres a ui bug where some dialogs and bottom sheet stay even after navigating to another page
@@ -190,6 +193,7 @@ fun Home(
             uiState = uiState,
             firstLaunch = firstLaunch,
             showNotesNames = showNotesNames,
+            notesToUseOnWidget = notesToUseOnWidget.value,
             onTextEditor = { path ->
                 onTextEditor(path)
             },
@@ -211,10 +215,11 @@ private fun Content(
     uiState: HomeUiState,
     firstLaunch: State<Boolean>,
     showNotesNames: State<Boolean>,
+    notesToUseOnWidget: List<String>,
     onTextEditor: (path: String) -> Unit,
     encryptionManager: EncryptionManager,
     onWriteFirstLaunch: (value: Boolean) -> Unit,
-    onUseNoteOnWidget: (value: String) -> Unit
+    onUseNoteOnWidget: (value: List<String>) -> Unit
 ) {
     val ctx = LocalContext.current
     val resc = LocalResources.current
@@ -225,6 +230,7 @@ private fun Content(
     var navigateToTextEditor by remember { mutableStateOf(false) }
     var selectedFile by remember { mutableStateOf(SelectedFileState()) }
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
+    val localNotesList: MutableList<String> = notesToUseOnWidget.toMutableList()
 
     uiState.showFirstLaunchDialog = firstLaunch.value
 
@@ -257,7 +263,17 @@ private fun Content(
                 onDismissRequest = {
                     uiState.showDeleteFileDialog = false
                 },
-                file = selectedFile.file!!
+                file = selectedFile.file!!,
+                onRemoveFromWidgetList = {
+                    if (localNotesList.contains(selectedFile.path!!)) {
+                        localNotesList -= selectedFile.path!!
+                        onUseNoteOnWidget(localNotesList)
+
+                        scope.launch {
+                            AppWidget().updateAll(ctx)
+                        }
+                    }
+                }
             )
         }
 
@@ -306,14 +322,23 @@ private fun Content(
                     uiState.showDeleteFileDialog = true
                 },
                 onUseNoteOnWidgetClick = {
-                    onUseNoteOnWidget(selectedFile.path!!)
+                    if (!localNotesList.contains(selectedFile.path!!)) {
+                        localNotesList += selectedFile.path!!
+                        onUseNoteOnWidget(localNotesList)
+
+                        Toast.makeText(ctx, resc.getString(R.string.added_note_to_widgets), Toast.LENGTH_SHORT).show()
+                    } else {
+                        localNotesList -= selectedFile.path!!
+                        onUseNoteOnWidget(localNotesList)
+
+                        Toast.makeText(ctx, resc.getString(R.string.removed_note_from_widgets), Toast.LENGTH_SHORT).show()
+                    }
 
                     scope.launch {
                         sheetState.hide()
                         uiState.showBottomSheet = false
+                        AppWidget().updateAll(ctx)
                     }
-
-                    Toast.makeText(ctx, "Using note on home screen", Toast.LENGTH_SHORT).show()
                 }
             )
         }

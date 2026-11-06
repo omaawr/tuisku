@@ -3,6 +3,8 @@ package com.omaawr.tuisku.ui.widget
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -54,11 +56,32 @@ fun Widget() {
         }
 
         is WidgetState.Loaded -> {
+            val map = (uiState.value as WidgetState.Loaded).notes
+            val count = map.count()
+            val index = remember { mutableIntStateOf(0) }
+            val currentNoteSelected = map.entries.elementAt(index.intValue)
+
             Scaffold(
                 titleBar = {
                     TitleBar(
-                        title = (uiState.value as WidgetState.Loaded).decryptedFilename,
+                        title = currentNoteSelected.key,
                         actions = {
+                            if (count > 1) {
+                                CircleIconButton(
+                                    imageProvider = ImageProvider(R.drawable.ic_auto_save),
+                                    contentDescription = null,
+                                    onClick = {
+                                        val newIndex = index.intValue + 1
+
+                                        if (newIndex < count) {
+                                            index.intValue = newIndex
+                                        } else {
+                                            index.intValue = 0
+                                        }
+                                    }
+                                )
+                            }
+
                             CircleIconButton(
                                 imageProvider = ImageProvider(R.drawable.ic_edit),
                                 contentDescription = null,
@@ -74,7 +97,7 @@ fun Widget() {
                 ) {
                     item {
                         Text(
-                            text = (uiState.value as WidgetState.Loaded).decryptedContent,
+                            text = currentNoteSelected.value,
                             style = TextStyle(
                                 color = GlanceTheme.colors.onSurface
                             )

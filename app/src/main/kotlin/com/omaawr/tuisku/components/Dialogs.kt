@@ -106,7 +106,8 @@ fun NewFileDialog(
 @Composable
 fun DeleteFileDialog(
     onDismissRequest: () -> Unit,
-    file: File
+    file: File,
+    onRemoveFromWidgetList: () -> Unit
 ) {
     AlertDialog(
         title = {
@@ -124,6 +125,7 @@ fun DeleteFileDialog(
             TextButton(
                 onClick = {
                     file.delete()
+                    onRemoveFromWidgetList()
                     onDismissRequest()
                 }
             ) {
