@@ -33,7 +33,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -86,14 +85,6 @@ fun Settings(
     // sometimes the user can disable using biometrics on apps while its on, causing bugs when its still on but it doesn't actually work
     // app becomes really buggy if theres no password set, not really being able to respond to anything
     if (useBiometrics.value && !checkBiometrics(context)) viewModel.writeUseBiometrics(false)
-
-    DisposableEffect(Unit) {
-        // somehow theres a ui bug where some dialogs stay even after navigating to another page
-        // causing a NullPointerException on them since settings page and their state is cleared
-        onDispose {
-            uiState.clear()
-        }
-    }
 
     Scaffold(
         topBar = {

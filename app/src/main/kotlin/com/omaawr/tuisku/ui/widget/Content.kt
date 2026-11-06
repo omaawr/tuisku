@@ -28,6 +28,11 @@ import com.omaawr.tuisku.domain.manager.WidgetManager
 import com.omaawr.tuisku.domain.manager.WidgetState
 import org.koin.compose.koinInject
 
+/**
+ * Widget content, this usually displays notes, or an error if something went wrong
+ *
+ * @since 1.4.1
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Widget() {

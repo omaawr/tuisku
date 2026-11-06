@@ -11,7 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-// loading page incase if the ui state is still loading
+/**
+ * Landing page used for... when the app is still collecting the password
+ * to check if it's empty or not
+ *
+ * @since 1.4.0
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Landing() {

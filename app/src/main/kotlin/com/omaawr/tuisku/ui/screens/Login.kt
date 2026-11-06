@@ -34,6 +34,12 @@ import com.omaawr.tuisku.components.biometricCallback
 import com.omaawr.tuisku.ui.viewmodels.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Login page, which prompts the user to enter their password or use biometrics
+ *
+ * @since 1.4.0
+ * @param onHome - Upon navigating to the Home page (if the authentication was a success)
+ */
 @Composable
 fun Login(
     onHome: () -> Unit

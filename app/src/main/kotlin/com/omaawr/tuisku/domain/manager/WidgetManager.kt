@@ -20,6 +20,13 @@ sealed interface WidgetState {
     data object Error : WidgetState
 }
 
+/**
+ * Widget manager, which collects the notes and decrypts them for the widget to display
+ *
+ * @since 1.4.1
+ * @param settings - Settings repository (provided by Koin)
+ * @param encryptionManager - Encryption maanger (provided by Koin)
+ */
 class WidgetManager(
     val settings: SettingsRepository,
     val encryptionManager: EncryptionManager,

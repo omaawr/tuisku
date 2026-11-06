@@ -3,6 +3,7 @@
     android:minWidth="180dp"
     android:minHeight="64dp"
     android:updatePeriodMillis="86400000"
+    android:description="@string/widget_description"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
