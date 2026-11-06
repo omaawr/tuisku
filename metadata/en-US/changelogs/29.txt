@@ -1,0 +1,2 @@
+feat: add widget support
+fix: app icon background in splash screen
