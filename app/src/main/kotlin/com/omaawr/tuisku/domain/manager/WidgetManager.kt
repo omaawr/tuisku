@@ -4,7 +4,6 @@ import android.util.Log
 import com.omaawr.tuisku.domain.repo.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,11 +39,14 @@ class WidgetManager(
         collectState()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun collectState() {
         scope.launch {
             settings.noteToUseOnWidget().collect { notes ->
                 val map: MutableMap<String, String> = mutableMapOf()
+
+                if (notes.isEmpty()) {
+                    uiState.value = WidgetState.Error
+                }
 
                 notes.forEach { path ->
                     try {
